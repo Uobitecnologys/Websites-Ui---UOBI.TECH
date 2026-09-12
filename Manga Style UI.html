@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHONEN REALM - Manga UI & Interactive Creative Hub</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts: Bangers (Manga Titles), Bungee, permanent Marker & CC Wild Words style fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Plus+Jakarta+Sans:ital,wght@0,400;0,700;0,900;1,900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Custom Configuration for Manga Aesthetic -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        manga: ['Bangers', 'cursive'],
+                        ink: ['Permanent Marker', 'cursive'],
+                        jp: ['Yuji Syuku', 'serif'],
+                    },
+                    colors: {
+                        manga: {
+                            ink: '#0a0a0c',
+                            paper: '#f8f6f0',
+                            pop: '#ff2a5f',
+                            yellow: '#ffd600',
+                            cyan: '#00f0ff',
+                            border: '#111115',
+                        }
+                    },
+                    boxShadow: {
+                        'manga': '5px 5px 0px #0a0a0c',
+                        'manga-lg': '8px 8px 0px #0a0a0c',
+                        'manga-xl': '12px 12px 0px #0a0a0c',
+                        'manga-pop': '6px 6px 0px #ff2a5f',
+                        'manga-yellow': '6px 6px 0px #ffd600',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Halftone Pattern Generator */
+        .bg-halftone {
+            background-image: radial-gradient(#0a0a0c 20%, transparent 20%), radial-gradient(#0a0a0c 20%, transparent 20%);
+            background-position: 0 0, 8px 8px;
+            background-size: 16px 16px;
+        }
+
+        .bg-halftone-light {
+            background-image: radial-gradient(rgba(0,0,0,0.12) 20%, transparent 20%);
+            background-size: 10px 10px;
+        }
+
+        .bg-halftone-pop {
+            background-image: radial-gradient(#ff2a5f 25%, transparent 25%);
+            background-size: 12px 12px;
+        }
+
+        /* Speed Lines / Action Background */
+        .bg-speed-lines {
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                rgba(255, 42, 95, 0.15) 0deg 3deg,
+                transparent 3deg 12deg
+            );
+        }
+
+        .dark .bg-speed-lines {
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                rgba(255, 214, 0, 0.1) 0deg 2deg,
+                transparent 2deg 10deg
+            );
+        }
+
+        /* Comic Panel Frame Styling */
+        .manga-panel {
+            border: 4px solid #0a0a0c;
+            background-color: #f8f6f0;
+            position: relative;
+            box-shadow: 6px 6px 0px #0a0a0c;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dark .manga-panel {
+            background-color: #12131a;
+            border-color: #f8f6f0;
+            box-shadow: 6px 6px 0px #f8f6f0;
+        }
+
+        .manga-panel:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 10px 10px 0px #ff2a5f;
+        }
+
+        .dark .manga-panel:hover {
+            box-shadow: 10px 10px 0px #ffd600;
+        }
+
+        /* Speech Bubble Styling */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border: 3px solid #0a0a0c;
+            border-radius: 18px;
+            color: #0a0a0c;
+            box-shadow: 4px 4px 0px #0a0a0c;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -14px;
+            left: 24px;
+            border-width: 14px 12px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            left: 22px;
+            border-width: 16px 14px 0;
+            border-style: solid;
+            border-color: #0a0a0c transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* Onomatopoeia Floating Text */
+        .sfx-text {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 0.05em;
+            text-shadow: 3px 3px 0px #0a0a0c, -2px -2px 0px #0a0a0c, 2px -2px 0px #0a0a0c, -2px 2px 0px #0a0a0c;
+            transform: rotate(-4deg);
+            display: inline-block;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #ff2a5f; border: 2px solid #0a0a0c; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffd600; }
+
+        /* Keyframe SFX Floating Animation */
+        @keyframes sfxPulse {
+            0%, 100% { transform: scale(1) rotate(-3deg); }
+            50% { transform: scale(1.1) rotate(2deg); }
+        }
+        .animate-sfx { animation: sfxPulse 2s infinite ease-in-out; }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-4px, 4px); }
+            40% { transform: translate(-4px, -4px); }
+            60% { transform: translate(4px, 4px); }
+            80% { transform: translate(4px, -4px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-[#f0ebe1] dark:bg-[#0a0a0d] text-[#0a0a0c] dark:text-[#f8f6f0] font-sans min-h-screen transition-colors duration-300 selection:bg-manga-pop selection:text-white relative overflow-x-hidden" id="main-body">
+
+    <!-- Background Halftone Overlay -->
+    <div class="fixed inset-0 bg-halftone-light dark:opacity-10 opacity-30 pointer-events-none z-0"></div>
+    <div class="fixed inset-0 bg-speed-lines opacity-20 pointer-events-none z-0"></div>
+
+    <!-- Onomatopoeia Floating SFX Badges Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-15 dark:opacity-20 select-none">
+        <span class="sfx-text text-8xl text-manga-pop absolute top-10 left-10 animate-sfx">ゴゴゴ...</span>
+        <span class="sfx-text text-9xl text-manga-yellow absolute top-1/3 right-10 animate-sfx" style="animation-delay: 0.5s;">ドドド!</span>
+        <span class="sfx-text text-7xl text-manga-cyan absolute bottom-10 left-1/4 animate-sfx" style="animation-delay: 1s;">BAAM!</span>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <header class="manga-panel p-4 mb-8 bg-white dark:bg-[#12131a] flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="relative group cursor-pointer" onclick="playMangaSFX('zap')">
+                    <div class="w-14 h-14 bg-manga-pop text-white border-3 border-black flex items-center justify-center font-manga text-3xl shadow-manga transform -rotate-3 group-hover:rotate-6 transition-transform">
+                        漫画
+                    </div>
+                    <span class="absolute -top-3 -right-3 bg-manga-yellow text-black text-[10px] font-manga px-2 py-0.5 border-2 border-black rotate-12 shadow-sm font-bold">
+                        VOL. 99
+                    </span>
+                </div>
+                <div>
+                    <h1 class="font-manga text-3xl sm:text-4xl tracking-wider text-black dark:text-white flex items-center gap-2">
+                        SHONEN <span class="text-manga-pop underline decoration-4 decoration-manga-yellow">REALM</span>
+                    </h1>
+                    <p class="text-xs font-ink text-slate-600 dark:text-slate-400">Interactive Comic, Sound & Screentone Suite</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex flex-wrap items-center justify-center gap-2 font-manga text-lg">
+                <button onclick="scrollToSection('section-reader')" class="px-3 py-1 bg-white dark:bg-slate-900 border-2 border-black text-black dark:text-white hover:bg-manga-yellow hover:text-black shadow-manga transition-all transform hover:-translate-y-0.5">Reader</button>
+                <button onclick="scrollToSection('section-sfx')" class="px-3 py-1 bg-white dark:bg-slate-900 border-2 border-black text-black dark:text-white hover:bg-manga-pop hover:text-white shadow-manga transition-all transform hover:-translate-y-0.5">SFX Lab</button>
+                <button onclick="scrollToSection('section-characters')" class="px-3 py-1 bg-white dark:bg-slate-900 border-2 border-black text-black dark:text-white hover:bg-manga-cyan hover:text-black shadow-manga transition-all transform hover:-translate-y-0.5">Heroes</button>
+                <button onclick="scrollToSection('section-canvas')" class="px-3 py-1 bg-white dark:bg-slate-900 border-2 border-black text-black dark:text-white hover:bg-emerald-400 hover:text-black shadow-manga transition-all transform hover:-translate-y-0.5">Ink Studio</button>
+            </nav>
+
+            <!-- Mode Toggle & Sound Controller -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSoundMute()" id="sound-toggle-btn" class="p-2.5 bg-manga-yellow border-2 border-black text-black shadow-manga hover:bg-amber-300 font-bold transition-all" title="Toggle Audio SFX">
+                    <i data-lucide="volume-2" id="sound-icon" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleTheme()" class="p-2.5 bg-manga-pop border-2 border-black text-white shadow-manga hover:bg-pink-600 font-bold transition-all" title="Toggle Dark/Screentone Theme">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <section id="section-reader" class="mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-manga text-3xl tracking-wide flex items-center gap-2">
+                    <span class="bg-manga-pop text-white px-3 py-1 border-2 border-black shadow-manga text-xl">CHAPTER 42</span>
+                    <span>THE SHADOW RECKONING</span>
+                </h2>
+                <div class="flex items-center gap-2 text-xs font-bold">
+                    <span class="px-2 py-1 bg-manga-yellow text-black border-2 border-black shadow-sm font-mono">PANEL FOCUS MODE</span>
+                </div>
+            </div>
+
+            <!-- Manga Reader Frame -->
+            <div class="manga-panel p-4 sm:p-6 bg-white dark:bg-[#151722] relative overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-[220px]">
+
+                    <!-- Panel 1: Hero Splash -->
+                    <div class="md:col-span-8 md:row-span-2 relative group cursor-pointer border-4 border-black bg-slate-900 overflow-hidden shadow-manga" onclick="focusMangaPanel(1, 'The Hero awakens his latent energy!')">
+                        <img id="panel-img-1" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=80" alt="Manga Panel 1" class="w-full h-full object-cover filter grayscale contrast-150 group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-halftone opacity-30 pointer-events-none"></div>
+                        
+                        <!-- Floating Speech Bubble inside Panel -->
+                        <div class="absolute top-4 left-4 speech-bubble p-3 font-ink text-xs sm:text-sm max-w-xs z-10 animate-bounce" style="animation-duration: 3s;">
+                            "I won't let this realm fall into darkness... NEVER!"
+                        </div>
+
+                        <!-- Manga Action SFX -->
+                        <span class="sfx-text text-5xl sm:text-7xl text-manga-pop absolute bottom-4 right-4 z-10 drop-shadow-lg">GWAAR!</span>
+                        <div class="absolute inset-0 border-2 border-white/20 pointer-events-none"></div>
+                    </div>
+
+                    <!-- Panel 2: Villain Reaction -->
+                    <div class="md:col-span-4 md:row-span-1 relative group cursor-pointer border-4 border-black bg-slate-950 overflow-hidden shadow-manga" onclick="focusMangaPanel(2, 'The Dark Lord chuckles in disbelief.')">
+                        <img id="panel-img-2" src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80" alt="Manga Panel 2" class="w-full h-full object-cover filter grayscale contrast-200 group-hover:scale-110 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-speed-lines opacity-40 pointer-events-none"></div>
+                        <span class="sfx-text text-4xl text-manga-yellow absolute top-2 right-2 z-10">K-KUZU!</span>
+                        <div class="absolute bottom-2 left-2 bg-black text-white font-mono text-[10px] px-2 py-0.5 border border-white">
+                            PANEL 02
+                        </div>
+                    </div>
+
+                    <!-- Panel 3: Clash Effect -->
+                    <div class="md:col-span-4 md:row-span-1 relative group cursor-pointer border-4 border-black bg-slate-900 overflow-hidden shadow-manga" onclick="focusMangaPanel(3, 'Energy surges creating an immense blast wave!')">
+                        <img id="panel-img-3" src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80" alt="Manga Panel 3" class="w-full h-full object-cover filter grayscale contrast-200 group-hover:scale-110 transition-transform duration-300">
+                        <div class="absolute bottom-3 right-3 speech-bubble p-2.5 font-manga text-sm z-10 bg-manga-yellow text-black border-2 border-black">
+                            BAM!!
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Reader Navigation Toolbar -->
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-4 pt-4 border-t-4 border-black dark:border-white">
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevChapter()" class="px-4 py-2 bg-black text-white font-manga text-sm border-2 border-black hover:bg-manga-pop shadow-manga transition-all flex items-center gap-1">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i> PREV CH.
+                        </button>
+                        <span class="font-mono text-xs font-bold px-3 py-2 bg-manga-yellow text-black border-2 border-black">PAGE 12 / 24</span>
+                        <button onclick="nextChapter()" class="px-4 py-2 bg-black text-white font-manga text-sm border-2 border-black hover:bg-manga-pop shadow-manga transition-all flex items-center gap-1">
+                            NEXT CH. <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Zoom / Panel Inspector Trigger -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="playMangaSFX('slash')" class="px-3 py-2 bg-manga-cyan text-black font-manga text-sm border-2 border-black shadow-manga hover:bg-cyan-300 transition-all">
+                            ⚡ READ IN SPEED MODE
+                        </button>
+                        <button onclick="toggleBookmark()" id="bookmark-btn" class="px-3 py-2 bg-white text-black font-manga text-sm border-2 border-black shadow-manga hover:bg-emerald-300 transition-all">
+                            🔖 BOOKMARK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-sfx" class="mb-12">
+            <div class="manga-panel p-6 bg-white dark:bg-[#12131a]">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-4 border-b-4 border-black">
+                    <div>
+                        <span class="px-2.5 py-1 bg-manga-pop text-white font-manga text-sm border-2 border-black shadow-sm">WEB AUDIO SYNTH</span>
+                        <h2 class="font-manga text-3xl tracking-wide mt-1">DYNAMIC MANGA ONOMATOPOEIA SOUND LAB</h2>
+                        <p class="text-xs font-ink text-slate-600 dark:text-slate-400">Synthesize authentic comic book sound effects in real time using browser audio nodes!</p>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Audio Engine Ready</span>
+                    </div>
+                </div>
+
+                <!-- SFX Sound Trigger Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <button onclick="triggerSFXSound('slash', 'ズバッ! (ZUBAT!)')" class="p-4 bg-manga-yellow text-black border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-black group-hover:scale-110 transition-transform">SLASH!</span>
+                        <span class="font-jp text-xs font-bold">ズバッ!</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Blade Cut</span>
+                    </button>
+
+                    <button onclick="triggerSFXSound('boom', 'ドドド! (DODODO!)')" class="p-4 bg-manga-pop text-white border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-white group-hover:scale-110 transition-transform">BOOM!</span>
+                        <span class="font-jp text-xs font-bold">ドドド!</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Heavy Explosion</span>
+                    </button>
+
+                    <button onclick="triggerSFXSound('zap', 'ビビビ! (BIBIBI!)')" class="p-4 bg-manga-cyan text-black border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-black group-hover:scale-110 transition-transform">ZAP!</span>
+                        <span class="font-jp text-xs font-bold">ビビビ!</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Lightning Beam</span>
+                    </button>
+
+                    <button onclick="triggerSFXSound('stinger', 'ゴゴゴ... (GOGOGO)')" class="p-4 bg-purple-500 text-white border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-white group-hover:scale-110 transition-transform">MENACE</span>
+                        <span class="font-jp text-xs font-bold">ゴゴゴ...</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Dark Aura</span>
+                    </button>
+
+                    <button onclick="triggerSFXSound('punch', 'バキッ! (BAKI!)')" class="p-4 bg-emerald-400 text-black border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-black group-hover:scale-110 transition-transform">PUNCH!</span>
+                        <span class="font-jp text-xs font-bold">バキッ!</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Heavy Strike</span>
+                    </button>
+
+                    <button onclick="triggerSFXSound('powerup', 'シュアッ! (SHUAA!)')" class="p-4 bg-orange-500 text-white border-3 border-black shadow-manga hover:translate-y-1 hover:shadow-none transition-all flex flex-col items-center gap-2 group">
+                        <span class="sfx-text text-3xl text-white group-hover:scale-110 transition-transform">CHARGE</span>
+                        <span class="font-jp text-xs font-bold">シュアッ!</span>
+                        <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 rounded">Energy Flare</span>
+                    </button>
+                </div>
+
+                <!-- Onomatopoeia Sound Banner Output Display -->
+                <div id="sfx-display-banner" class="mt-6 p-4 bg-black text-white border-2 border-white flex items-center justify-between overflow-hidden relative min-h-[70px]">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="activity" class="w-6 h-6 text-manga-yellow animate-bounce"></i>
+                        <div>
+                            <div class="text-[10px] font-mono text-slate-400">LAST GENERATED SFX ONOMATOPOEIA</div>
+                            <div id="sfx-text-output" class="font-manga text-2xl text-manga-yellow">CLICK A SOUND BUTTON ABOVE TO SYNTHESIZE AUDIO!</div>
+                        </div>
+                    </div>
+                    <span id="sfx-jp-output" class="font-jp text-4xl text-manga-pop opacity-80">ゴゴゴ</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-characters" class="mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-manga text-3xl tracking-wide flex items-center gap-2">
+                    <span class="bg-manga-yellow text-black px-3 py-1 border-2 border-black shadow-manga text-xl">HEROES & RIVALS</span>
+                    <span>CHARACTER ARCHIVES</span>
+                </h2>
+            </div>
+
+            <!-- Character Showcase Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- Character Card 1 -->
+                <div class="manga-panel p-5 bg-white dark:bg-[#151722] flex flex-col justify-between group">
+                    <div class="relative overflow-hidden border-3 border-black mb-4 h-64 bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80" alt="Ren - Blade Master" class="w-full h-full object-cover filter grayscale contrast-150 group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-halftone opacity-25"></div>
+                        <span class="absolute top-2 left-2 bg-manga-pop text-white font-manga text-xs px-2 py-0.5 border border-black shadow-sm">PROTAGONIST</span>
+                        <span class="sfx-text text-4xl text-manga-yellow absolute bottom-2 right-2">REN</span>
+                    </div>
+
+                    <div>
+                        <h3 class="font-manga text-2xl text-black dark:text-white">REN SHINOHARA</h3>
+                        <p class="text-xs font-ink text-manga-pop mb-3">"Shadow Blade Style - 7th Stance"</p>
+                        
+                        <!-- Stat Bars -->
+                        <div class="space-y-2 text-xs font-bold font-mono">
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>POWER</span><span>94/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-pop h-full" style="width: 94%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>SPEED</span><span>98/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-yellow h-full" style="width: 98%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>SPIRIT</span><span>88/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-cyan h-full" style="width: 88%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="playMangaSFX('slash'); showCharacterQuote('Ren', 'My blade will slice through fate itself!')" class="mt-4 w-full py-2 bg-black text-white font-manga text-sm border-2 border-black hover:bg-manga-pop shadow-manga transition-all">
+                        SELECT HERO
+                    </button>
+                </div>
+
+                <!-- Character Card 2 -->
+                <div class="manga-panel p-5 bg-white dark:bg-[#151722] flex flex-col justify-between group">
+                    <div class="relative overflow-hidden border-3 border-black mb-4 h-64 bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=600&q=80" alt="Kaito - Arcane Scholar" class="w-full h-full object-cover filter grayscale contrast-150 group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-halftone opacity-25"></div>
+                        <span class="absolute top-2 left-2 bg-manga-cyan text-black font-manga text-xs px-2 py-0.5 border border-black shadow-sm">RIVAL</span>
+                        <span class="sfx-text text-4xl text-manga-cyan absolute bottom-2 right-2">KAITO</span>
+                    </div>
+
+                    <div>
+                        <h3 class="font-manga text-2xl text-black dark:text-white">KAITO KAZAMA</h3>
+                        <p class="text-xs font-ink text-manga-cyan mb-3">"Void Manipulation & Lightning Caster"</p>
+                        
+                        <!-- Stat Bars -->
+                        <div class="space-y-2 text-xs font-bold font-mono">
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>POWER</span><span>90/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-pop h-full" style="width: 90%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>SPEED</span><span>92/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-yellow h-full" style="width: 92%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>INTELLIGENCE</span><span>99/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-cyan h-full" style="width: 99%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="playMangaSFX('zap'); showCharacterQuote('Kaito', 'Your movements were calculated 10 seconds ago.')" class="mt-4 w-full py-2 bg-black text-white font-manga text-sm border-2 border-black hover:bg-manga-cyan hover:text-black shadow-manga transition-all">
+                        SELECT HERO
+                    </button>
+                </div>
+
+                <!-- Character Card 3 -->
+                <div class="manga-panel p-5 bg-white dark:bg-[#151722] flex flex-col justify-between group">
+                    <div class="relative overflow-hidden border-3 border-black mb-4 h-64 bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80" alt="Yuki - Frost Empress" class="w-full h-full object-cover filter grayscale contrast-150 group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-halftone opacity-25"></div>
+                        <span class="absolute top-2 left-2 bg-manga-yellow text-black font-manga text-xs px-2 py-0.5 border border-black shadow-sm">ALLY</span>
+                        <span class="sfx-text text-4xl text-manga-pop absolute bottom-2 right-2">YUKI</span>
+                    </div>
+
+                    <div>
+                        <h3 class="font-manga text-2xl text-black dark:text-white">YUKI MIZUKI</h3>
+                        <p class="text-xs font-ink text-amber-500 mb-3">"Absolute Zero Glacial Domain"</p>
+                        
+                        <!-- Stat Bars -->
+                        <div class="space-y-2 text-xs font-bold font-mono">
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>POWER</span><span>88/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-pop h-full" style="width: 88%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>DEFENSE</span><span>96/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-yellow h-full" style="width: 96%;"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5"><span>SPIRIT</span><span>95/100</span></div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 border border-black"><div class="bg-manga-cyan h-full" style="width: 95%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="playMangaSFX('stinger'); showCharacterQuote('Yuki', 'Chill your heart before you face my domain.')" class="mt-4 w-full py-2 bg-black text-white font-manga text-sm border-2 border-black hover:bg-manga-yellow hover:text-black shadow-manga transition-all">
+                        SELECT HERO
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="section-canvas" class="mb-12">
+            <div class="manga-panel p-6 bg-white dark:bg-[#12131a]">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 pb-3 border-b-4 border-black">
+                    <div>
+                        <span class="px-2 py-0.5 bg-emerald-400 text-black font-manga text-xs border border-black">DRAWING STUDIO</span>
+                        <h2 class="font-manga text-3xl tracking-wide">INTERACTIVE MANGA INK & SCREENTONE CANVAS</h2>
+                    </div>
+
+                    <!-- Canvas Tool Controls -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="setCanvasTool('ink')" id="tool-ink" class="px-3 py-1.5 bg-black text-white font-manga text-xs border-2 border-black shadow-manga transition-all">✒️ INK BRUSH</button>
+                        <button onclick="setCanvasTool('screentone')" id="tool-screentone" class="px-3 py-1.5 bg-white text-black font-manga text-xs border-2 border-black shadow-manga hover:bg-manga-yellow transition-all">░ SCREENTONE</button>
+                        <button onclick="setCanvasTool('stamp')" id="tool-stamp" class="px-3 py-1.5 bg-white text-black font-manga text-xs border-2 border-black shadow-manga hover:bg-manga-pop hover:text-white transition-all">💥 SFX STAMP</button>
+                        <button onclick="clearMangaCanvas()" class="px-3 py-1.5 bg-red-500 text-white font-manga text-xs border-2 border-black shadow-manga hover:bg-red-600 transition-all">🗑️ CLEAR</button>
+                    </div>
+                </div>
+
+                <!-- Canvas Area -->
+                <div class="relative w-full h-80 border-4 border-black bg-[#fdfbf7] dark:bg-slate-900 rounded-none shadow-manga overflow-hidden cursor-crosshair">
+                    <canvas id="manga-paint-canvas" class="w-full h-full"></canvas>
+                    <div class="absolute bottom-2 right-2 bg-black/80 text-white font-mono text-[10px] px-2 py-1 pointer-events-none">
+                        DRAW WITH MOUSE OR TOUCH • CLICK TO APPLY SCREENTONE
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-chapters" class="mb-12">
+            <div class="manga-panel p-6 bg-white dark:bg-[#12131a]">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b-4 border-black">
+                    <h2 class="font-manga text-3xl tracking-wide flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-7 h-7 text-manga-pop"></i>
+                        <span>MANGA CHAPTER VAULT</span>
+                    </h2>
+                    <span id="reading-progress-badge" class="font-mono text-xs font-bold px-3 py-1 bg-manga-pop text-white border-2 border-black shadow-sm">
+                        3 / 8 CHAPTERS READ
+                    </span>
+                </div>
+
+                <!-- Chapter List -->
+                <div class="space-y-3">
+                    <!-- Chapter Item 1 -->
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-between hover:bg-manga-yellow/20 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-none bg-black text-white font-manga flex items-center justify-center text-sm">01</span>
+                            <div>
+                                <h4 class="font-manga text-lg text-black dark:text-white">The Awakening in the Mist</h4>
+                                <p class="text-[10px] font-mono text-slate-500">Released Sep 2026 • 24 Pages</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-emerald-500 text-white font-manga text-xs border border-black">READ</span>
+                    </div>
+
+                    <!-- Chapter Item 2 -->
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-between hover:bg-manga-yellow/20 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-none bg-black text-white font-manga flex items-center justify-center text-sm">02</span>
+                            <div>
+                                <h4 class="font-manga text-lg text-black dark:text-white">Clash of the Arcane Crests</h4>
+                                <p class="text-[10px] font-mono text-slate-500">Released Sep 2026 • 28 Pages</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-emerald-500 text-white font-manga text-xs border border-black">READ</span>
+                    </div>
+
+                    <!-- Chapter Item 3 -->
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-between hover:bg-manga-yellow/20 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-none bg-manga-pop text-white font-manga flex items-center justify-center text-sm">03</span>
+                            <div>
+                                <h4 class="font-manga text-lg text-black dark:text-white">The Shadow Reckoning (Current)</h4>
+                                <p class="text-[10px] font-mono text-slate-500">Released Today • 32 Pages</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-manga-yellow text-black font-manga text-xs border border-black animate-pulse">READING</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="manga-panel p-6 bg-black text-white flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="sfx-text text-3xl text-manga-yellow">終</span>
+                <div>
+                    <h3 class="font-manga text-xl">SHONEN REALM STUDIO</h3>
+                    <p class="text-xs font-mono text-slate-400">Handcrafted with High-Contrast Ink & Web Audio Synthesis</p>
+                </div>
+            </div>
+            <div class="font-manga text-sm text-manga-cyan">
+                © 2026 SHONEN REALM • ALL RIGHTS RESERVED
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Theme Switcher Logic
+        let isDark = true;
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                html.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'sun');
+                isDark = false;
+                showMangaNotice("Light Screentone Mode Enabled!");
+            } else {
+                html.classList.add('dark');
+                icon.setAttribute('data-lucide', 'moon');
+                isDark = true;
+                showMangaNotice("Dark Ink Mode Enabled!");
+            }
+            lucide.createIcons();
+        }
+
+        // 2. Web Audio API Manga SFX Synthesizer
+        let audioCtx = null;
+        let isMuted = false;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleSoundMute() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('sound-icon');
+            if (isMuted) {
+                icon.setAttribute('data-lucide', 'volume-x');
+                showMangaNotice("Audio Muted!");
+            } else {
+                icon.setAttribute('data-lucide', 'volume-2');
+                showMangaNotice("Audio Unmuted!");
+            }
+            lucide.createIcons();
+        }
+
+        function playMangaSFX(type) {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+
+                if (type === 'slash') {
+                    // White noise burst + high pitch glide for sword slash
+                    const bufferSize = ctx.sampleRate * 0.2;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'highpass';
+                    filter.frequency.setValueAtTime(1000, now);
+                    filter.frequency.exponentialRampToValueAtTime(5000, now + 0.15);
+
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    noise.start(now);
+                } 
+                else if (type === 'boom') {
+                    // Low rumble sine oscillator + gain drop
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
+
+                    gain.gain.setValueAtTime(0.5, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } 
+                else if (type === 'zap') {
+                    // Quick pitch chirp for lightning or energy beam
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.linearRampToValueAtTime(200, now + 0.15);
+
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                }
+                else if (type === 'stinger') {
+                    // Menacing low drone bass
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(65, now);
+                    osc.frequency.setValueAtTime(60, now + 0.3);
+
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                }
+            } catch (e) {
+                console.log("Web Audio not supported or blocked");
+            }
+        }
+
+        function triggerSFXSound(type, onomatopoeia) {
+            playMangaSFX(type);
+            document.getElementById('sfx-text-output').textContent = `SYNTHESIZED: ${onomatopoeia}`;
+            document.getElementById('sfx-jp-output').textContent = onomatopoeia.split(' ')[0];
+            
+            // Add visual shake effect to display box
+            const banner = document.getElementById('sfx-display-banner');
+            banner.classList.add('animate-shake');
+            setTimeout(() => banner.classList.remove('animate-shake'), 300);
+        }
+
+        // 3. Panel Inspection Modal Zoom
+        function focusMangaPanel(panelNum, description) {
+            playMangaSFX('zap');
+            showMangaNotice(`[PANEL ${panelNum}] ${description}`);
+        }
+
+        function showCharacterQuote(name, quote) {
+            showMangaNotice(`${name}: "${quote}"`);
+        }
+
+        function showMangaNotice(msg) {
+            const body = document.getElementById('main-body');
+            const notice = document.createElement('div');
+            notice.className = "fixed bottom-6 right-6 z-50 bg-black text-white text-xs font-manga p-4 border-3 border-manga-yellow shadow-manga flex items-center gap-3 animate-bounce";
+            notice.innerHTML = `<span class="text-manga-pop text-lg">漫画!</span> <span>${msg}</span>`;
+            body.appendChild(notice);
+
+            setTimeout(() => {
+                notice.remove();
+            }, 3000);
+        }
+
+        // 4. Interactive Ink & Screentone Canvas Studio
+        const canvas = document.getElementById('manga-paint-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentTool = 'ink';
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100);
+
+        function setCanvasTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('#tool-ink, #tool-screentone, #tool-stamp').forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-white', 'text-black');
+            });
+            const activeBtn = document.getElementById(`tool-${tool}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-black');
+                activeBtn.classList.add('bg-black', 'text-white');
+            }
+            showMangaNotice(`Tool Switched: ${tool.toUpperCase()}`);
+        }
+
+        function clearMangaCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            showMangaNotice("Canvas Cleared!");
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (currentTool === 'ink') {
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0a0a0c';
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            } 
+            else if (currentTool === 'screentone') {
+                // Draw halftone dot cluster
+                ctx.fillStyle = '#0a0a0c';
+                for (let i = -15; i <= 15; i += 6) {
+                    for (let j = -15; j <= 15; j += 6) {
+                        if (Math.random() > 0.3) {
+                            ctx.beginPath();
+                            ctx.arc(x + i, y + j, 2, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+            } 
+            else if (currentTool === 'stamp') {
+                playMangaSFX('boom');
+                ctx.font = '30px Bangers';
+                ctx.fillStyle = '#ff2a5f';
+                ctx.fillText('BAM!', x - 20, y + 10);
+                isDrawing = false;
+            }
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+
+        // Touch event support for canvas mobile interaction
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        canvas.addEventListener('touchend', () => {
+            const mouseEvent = new MouseEvent("mouseup", {});
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        // 5. Navigation Scroll Helper
+        function scrollToSection(id) {
+            playMangaSFX('zap');
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleBookmark() {
+            playMangaSFX('stinger');
+            const btn = document.getElementById('bookmark-btn');
+            btn.innerHTML = "🔖 BOOKMARKED!";
+            btn.classList.add('bg-manga-yellow');
+            showMangaNotice("Chapter 42 Bookmarked!");
+        }
+
+        function prevChapter() {
+            playMangaSFX('zap');
+            showMangaNotice("Loading Chapter 41...");
+        }
+
+        function nextChapter() {
+            playMangaSFX('zap');
+            showMangaNotice("Loading Chapter 43...");
+        }
+    </script>
+</body>
+</html>

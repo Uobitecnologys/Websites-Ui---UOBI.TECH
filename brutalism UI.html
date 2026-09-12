@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BETON — Studio for Architecture</title>
+<style>
+
+  :root{
+    --concrete: #c7c3ba;
+    --ink: #121210;
+    --steel: #6e6a62;
+    --hazard: #e8da00;
+    --paper: #eeece5;
+    --rust: #833c1f;
+    --line: 3px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--concrete);
+    color:var(--ink);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height:1.4;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.025) 0px, rgba(0,0,0,0.025) 1px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 4px);
+  }
+
+  a{color:inherit;}
+
+  .wrap{
+    max-width:1200px;
+    margin:0 auto;
+    border-left: var(--line) solid var(--ink);
+    border-right: var(--line) solid var(--ink);
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    border-bottom: var(--line) solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 22px 28px;
+    position:sticky;
+    top:0;
+    background:var(--concrete);
+    z-index: 50;
+  }
+  header .mark{
+    font-weight:800;
+    font-size:1.4rem;
+    letter-spacing:-0.02em;
+  }
+  header nav{
+    display:flex;
+    gap:28px;
+    font-size:0.95rem;
+  }
+  header nav a{
+    text-decoration:none;
+    border-bottom: 2px solid transparent;
+    padding-bottom:2px;
+  }
+  header nav a:hover, header nav a:focus-visible{
+    border-bottom-color: var(--hazard);
+    outline:none;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    border-bottom: var(--line) solid var(--ink);
+    padding: 8vw 28px 6vw;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .kicker{
+    font-size:0.85rem;
+    color:var(--steel);
+    max-width: 34ch;
+    margin-bottom: 2rem;
+  }
+  .hero h1{
+    font-size: clamp(2.6rem, 8vw, 6.4rem);
+    line-height: 0.92;
+    font-weight: 800;
+    letter-spacing:-0.03em;
+    max-width: 16ch;
+  }
+  .hero h1 span{
+    display:block;
+  }
+  .hero .band{
+    margin-top: 3rem;
+    display:flex;
+    gap: 2px;
+    flex-wrap:wrap;
+  }
+  .hero .band div{
+    background:var(--ink);
+    color:var(--concrete);
+    font-size:0.8rem;
+    padding: 8px 14px;
+  }
+  .hero .band div.hz{
+    background:var(--hazard);
+    color:var(--ink);
+  }
+
+  /* diagonal hazard corner */
+  .hero::after{
+    content:"";
+    position:absolute;
+    top:-40px; right:-40px;
+    width:180px; height:180px;
+    background: repeating-linear-gradient(45deg, var(--hazard) 0 14px, var(--ink) 14px 28px);
+    transform: rotate(0deg);
+    opacity:0.9;
+  }
+
+  /* ---------- MANIFESTO ---------- */
+  .manifesto{
+    border-bottom: var(--line) solid var(--ink);
+    display:grid;
+    grid-template-columns: 1fr 1.6fr;
+  }
+  .manifesto .label{
+    padding: 3rem 28px;
+    border-right: var(--line) solid var(--ink);
+    font-size:0.85rem;
+    color:var(--steel);
+  }
+  .manifesto .body{
+    padding: 3rem 28px;
+  }
+  .manifesto p{
+    font-size:1.3rem;
+    max-width: 46ch;
+    font-weight: 500;
+  }
+  .manifesto p + p{
+    margin-top:1.4rem;
+    font-size:1rem;
+    color:var(--steel);
+    max-width: 52ch;
+    font-weight:400;
+  }
+
+  /* ---------- PRINCIPLES ---------- */
+  .principles{
+    border-bottom: var(--line) solid var(--ink);
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .principles > div{
+    padding: 2.6rem 24px;
+    border-right: var(--line) solid var(--ink);
+  }
+  .principles > div:last-child{ border-right:none; }
+  .principles h3{
+    font-size:1.15rem;
+    margin-bottom:0.8rem;
+  }
+  .principles p{
+    font-size:0.92rem;
+    color:var(--steel);
+  }
+  .principles .swatch{
+    width: 34px; height:10px;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ---------- WORKS ---------- */
+  .works{
+    border-bottom: var(--line) solid var(--ink);
+    padding: 0;
+  }
+  .works .heading{
+    padding: 2.4rem 28px 1rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom: var(--line) solid var(--ink);
+  }
+  .works .heading h2{
+    font-size:1.8rem;
+    font-weight:800;
+  }
+  .works .heading span{
+    font-size:0.85rem;
+    color:var(--steel);
+  }
+  table.index{
+    width:100%;
+    border-collapse:collapse;
+  }
+  table.index tr{
+    border-bottom: 1px solid var(--ink);
+  }
+  table.index tr:last-child{ border-bottom:none; }
+  table.index td{
+    padding: 1.1rem 28px;
+    font-size:1rem;
+    vertical-align:baseline;
+  }
+  table.index td.yr{
+    width:90px;
+    color:var(--steel);
+    font-variant-numeric: tabular-nums;
+  }
+  table.index td.name{
+    font-weight:700;
+    font-size:1.15rem;
+  }
+  table.index td.mat{
+    color:var(--steel);
+    text-align:right;
+    width:220px;
+  }
+  table.index tr{
+    transition: background 0.12s ease;
+  }
+  table.index tr:hover{
+    background: rgba(232, 218, 0, 0.35);
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact{
+    padding: 4rem 28px;
+    display:grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2rem;
+    border-bottom: var(--line) solid var(--ink);
+  }
+  .contact h2{
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    max-width: 14ch;
+  }
+  .contact .details{
+    border-left: var(--line) solid var(--ink);
+    padding-left: 2rem;
+  }
+  .contact .details div{
+    margin-bottom:1.2rem;
+  }
+  .contact .details .k{
+    font-size:0.78rem;
+    color:var(--steel);
+    margin-bottom:0.2rem;
+  }
+  .contact .details .v{
+    font-size:1.05rem;
+    font-weight:600;
+  }
+  .contact .cta{
+    display:inline-block;
+    margin-top:1rem;
+    background:var(--ink);
+    color:var(--concrete);
+    padding: 14px 22px;
+    text-decoration:none;
+    font-weight:700;
+  }
+  .contact .cta:hover{ background:var(--rust); }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 20px 28px;
+    display:flex;
+    justify-content:space-between;
+    font-size:0.8rem;
+    color:var(--steel);
+  }
+
+  @media (max-width: 720px){
+    .manifesto, .principles, .contact{ grid-template-columns: 1fr; }
+    .manifesto .label{ border-right:none; border-bottom: var(--line) solid var(--ink); }
+    .principles > div{ border-right:none; border-bottom: var(--line) solid var(--ink); }
+    .principles > div:last-child{ border-bottom:none; }
+    .contact .details{ border-left:none; border-top: var(--line) solid var(--ink); padding-left:0; padding-top:1.5rem; }
+    table.index td.mat{ display:none; }
+    header nav{ gap:14px; font-size:0.82rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; scroll-behavior:auto !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="mark">BETON</div>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#approach">Approach</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Studio for architecture and structural design, working in concrete, steel and reused material since 1994.</div>
+    <h1><span>Nothing</span><span>is hidden.</span></h1>
+    <div class="band">
+      <div>ATELIER — LEIPZIG</div>
+      <div class="hz">EST. 1994</div>
+      <div>12 BUILT WORKS</div>
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <div class="label">Position</div>
+    <div class="body">
+      <p>A building should look like what it is made of, holding up what it holds up, and nothing more.</p>
+      <p>We don't dress a structure in a facade it doesn't need. Where a wall carries load, you see the wall. Where a joint is welded, you see the weld. Clients come to us when they are tired of buildings that lie about how they stand.</p>
+    </div>
+  </section>
+
+  <section class="principles" id="approach">
+    <div>
+      <div class="swatch" style="background:var(--ink)"></div>
+      <h3>Structure is the drawing</h3>
+      <p>The load path is the plan. We design the frame first and let every surface follow from it, rather than styling a skin over an afterthought of a structure.</p>
+    </div>
+    <div>
+      <div class="swatch" style="background:var(--rust)"></div>
+      <h3>Material ages in public</h3>
+      <p>Concrete streaks, steel rusts, timber greys. We choose materials that are allowed to weather, and we detail joints so that weathering looks intended, not neglected.</p>
+    </div>
+    <div>
+      <div class="swatch" style="background:var(--hazard)"></div>
+      <h3>Cost is a design constraint</h3>
+      <p>A budget is not an obstacle to good work, it's an input. Our best buildings came from tight ones — poured on site, formed with local timber, finished once.</p>
+    </div>
+  </section>
+
+  <section class="works" id="work">
+    <div class="heading">
+      <h2>Selected work</h2>
+      <span>12 projects, 1998–2025</span>
+    </div>
+    <table class="index">
+      <tr>
+        <td class="yr">2025</td>
+        <td class="name">Riverside Pumping Station</td>
+        <td class="mat">Board-formed concrete</td>
+      </tr>
+      <tr>
+        <td class="yr">2022</td>
+        <td class="name">Halle 9 Studio Conversion</td>
+        <td class="mat">Salvaged steel, brick</td>
+      </tr>
+      <tr>
+        <td class="yr">2019</td>
+        <td class="name">Municipal Archive Extension</td>
+        <td class="mat">Precast panel, glass block</td>
+      </tr>
+      <tr>
+        <td class="yr">2015</td>
+        <td class="name">Werk 4 Housing Block</td>
+        <td class="mat">In-situ concrete</td>
+      </tr>
+      <tr>
+        <td class="yr">2011</td>
+        <td class="name">Freight Yard Footbridge</td>
+        <td class="mat">Corten steel</td>
+      </tr>
+      <tr>
+        <td class="yr">2003</td>
+        <td class="name">Kessler House</td>
+        <td class="mat">Rammed earth, timber</td>
+      </tr>
+      <tr>
+        <td class="yr">1998</td>
+        <td class="name">Ostblock Community Hall</td>
+        <td class="mat">Concrete, reused brick</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="contact" id="contact">
+    <h2>Bring us a site and a budget.</h2>
+    <div class="details">
+      <div>
+        <div class="k">Studio</div>
+        <div class="v">Beton Atelier, Spinnereistrasse 7, Leipzig</div>
+      </div>
+      <div>
+        <div class="k">Email</div>
+        <div class="v">projects@beton-atelier.de</div>
+      </div>
+      <div>
+        <div class="k">Phone</div>
+        <div class="v">+49 341 555 0142</div>
+      </div>
+      <a class="cta" href="mailto:projects@beton-atelier.de">Start a project</a>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 1994–2026 Beton Atelier</div>
+    <div>Built on site, no template</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

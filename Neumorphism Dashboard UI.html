@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neumorphism (Soft UI) Interactive Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-color: #e0e5ec;
+            --text-primary: #3d4852;
+            --text-muted: #7f8c8d;
+            --shadow-flat: 9px 9px 18px #bebebe, -9px -9px 18px #ffffff;
+            --shadow-pressed: inset 5px 5px 10px #b8b9be, inset -5px -5px 10px #ffffff;
+            --shadow-convex: linear-gradient(145deg, #f0f5ff, #cacfe3);
+            --shadow-concave: linear-gradient(145deg, #cacfe3, #f0f5ff);
+            --shadow-sm: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff;
+            --shadow-sm-pressed: inset 2px 2px 5px #b8b9be, inset -2px -2px 5px #ffffff;
+            --border-soft: rgba(255, 255, 255, 0.6);
+            --accent-color: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.4);
+            --card-radius: 1.75rem;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Variables */
+            --bg-color: #1e2029;
+            --text-primary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --shadow-flat: 8px 8px 16px #14151b, -8px -8px 16px #282b37;
+            --shadow-pressed: inset 4px 4px 8px #13141a, inset -4px -4px 8px #292c38;
+            --shadow-convex: linear-gradient(145deg, #20222c, #1b1d25);
+            --shadow-concave: linear-gradient(145deg, #1b1d25, #20222c);
+            --shadow-sm: 4px 4px 8px #14151b, -4px -4px 8px #282b37;
+            --shadow-sm-pressed: inset 2px 2px 4px #13141a, inset -2px -2px 4px #292c38;
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --accent-glow: rgba(6, 182, 212, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Neumorphic Utility Classes */
+        .neu-flat {
+            background: var(--bg-color);
+            box-shadow: var(--shadow-flat);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-soft);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .neu-pressed {
+            background: var(--bg-color);
+            box-shadow: var(--shadow-pressed);
+            border-radius: var(--card-radius);
+            transition: all 0.2s ease;
+        }
+
+        .neu-button {
+            background: var(--bg-color);
+            box-shadow: var(--shadow-sm);
+            border-radius: 1rem;
+            border: 1px solid var(--border-soft);
+            cursor: pointer;
+            transition: all 0.15s ease-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .neu-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .neu-button:active, .neu-button.active {
+            box-shadow: var(--shadow-sm-pressed) !important;
+            transform: translateY(1px);
+            color: var(--accent-color);
+        }
+
+        .neu-button.active-accent {
+            box-shadow: var(--shadow-sm-pressed) !important;
+            color: var(--accent-color);
+            border-color: var(--accent-glow);
+        }
+
+        .neu-icon-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-flat);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .neu-icon-btn:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .neu-icon-btn:active, .neu-icon-btn.active {
+            box-shadow: var(--shadow-pressed);
+            color: var(--accent-color);
+        }
+
+        .neu-input {
+            background: var(--bg-color);
+            box-shadow: var(--shadow-pressed);
+            border-radius: 1rem;
+            border: 1px solid transparent;
+            outline: none;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .neu-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-pressed), 0 0 0 3px var(--accent-glow);
+        }
+
+        /* Neumorphic Switch */
+        .neu-switch {
+            width: 3.5rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-pressed);
+            padding: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .neu-switch-handle {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+        }
+
+        .neu-switch.checked .neu-switch-handle {
+            transform: translateX(1.5rem);
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Accent Text and Backgrounds */
+        .text-accent {
+            color: var(--accent-color);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
+        }
+
+        /* Custom Range Slider */
+        input[type=range].neu-range {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range].neu-range:focus {
+            outline: none;
+        }
+
+        input[type=range].neu-range::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            cursor: pointer;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-pressed);
+            border-radius: 9999px;
+        }
+
+        input[type=range].neu-range::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--accent-color);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+
+        input[type=range].neu-range::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* Animated Progress Rings */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke: var(--accent-color);
+        }
+
+        /* Rotating Vinyl Album */
+        .spinning-album {
+            animation: spin 12s linear infinite;
+        }
+        .spinning-album.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dynamic Equalizer Bars */
+        .eq-bar {
+            width: 4px;
+            border-radius: 2px;
+            background-color: var(--accent-color);
+            animation: eqBounce 1s ease-in-out infinite alternate;
+        }
+
+        .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 40%; }
+        .eq-bar:nth-child(2) { animation-delay: 0.3s; height: 85%; }
+        .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+        .eq-bar:nth-child(4) { animation-delay: 0.4s; height: 95%; }
+        .eq-bar:nth-child(5) { animation-delay: 0.15s; height: 50%; }
+
+        .eq-stopped .eq-bar {
+            animation: none !important;
+            height: 20% !important;
+        }
+
+        @keyframes eqBounce {
+            0% { height: 15%; }
+            100% { height: 100%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 lg:p-10 flex flex-col items-center justify-start">
+
+    <header class="w-full max-w-7xl mb-8">
+        <div class="neu-flat p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-4">
+                <div class="neu-icon-btn text-accent">
+                    <i data-lucide="layers" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-2xl tracking-tight">SOFT-UI DASHBOARD</h1>
+                    <p class="text-xs font-semibold opacity-70 tracking-wide uppercase">Tactile Neumorphic Experience Engine</p>
+                </div>
+            </div>
+
+            <!-- Controls: Theme Toggle & Accent Colors -->
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                
+                <!-- Color Accent Swatches -->
+                <div class="neu-pressed px-3 py-2 flex items-center space-x-3 rounded-2xl">
+                    <span class="text-xs font-bold text-muted uppercase tracking-wider hidden sm:inline">Accent</span>
+                    <button onclick="setAccent('#06b6d4', 'rgba(6, 182, 212, 0.4)')" class="w-6 h-6 rounded-full bg-cyan-500 shadow-md hover:scale-110 transition-transform" title="Cyan"></button>
+                    <button onclick="setAccent('#8b5cf6', 'rgba(139, 92, 246, 0.4)')" class="w-6 h-6 rounded-full bg-violet-500 shadow-md hover:scale-110 transition-transform" title="Violet"></button>
+                    <button onclick="setAccent('#10b981', 'rgba(16, 185, 129, 0.4)')" class="w-6 h-6 rounded-full bg-emerald-500 shadow-md hover:scale-110 transition-transform" title="Emerald"></button>
+                    <button onclick="setAccent('#f43f5e', 'rgba(244, 63, 94, 0.4)')" class="w-6 h-6 rounded-full bg-rose-500 shadow-md hover:scale-110 transition-transform" title="Coral"></button>
+                    <button onclick="setAccent('#f59e0b', 'rgba(245, 158, 11, 0.4)')" class="w-6 h-6 rounded-full bg-amber-500 shadow-md hover:scale-110 transition-transform" title="Amber"></button>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" onclick="toggleTheme()" class="neu-button px-4 py-2.5 text-xs font-bold flex items-center gap-2">
+                    <i id="theme-icon" data-lucide="moon" class="w-4 h-4 text-accent"></i>
+                    <span id="theme-text">Dark Mode</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="thermometer" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Smart Thermostat</h2>
+                </div>
+                <div class="neu-switch checked" id="thermostat-power" onclick="toggleSwitch(this)">
+                    <div class="neu-switch-handle"></div>
+                </div>
+            </div>
+
+            <!-- Dial / Knob -->
+            <div class="flex justify-center my-6">
+                <div class="w-48 h-48 rounded-full neu-flat flex items-center justify-center p-4 relative">
+                    <div class="w-36 h-36 rounded-full neu-pressed flex flex-col items-center justify-center text-center p-2 relative">
+                        <span class="text-xs font-bold text-muted uppercase">Target</span>
+                        <span id="temp-val" class="text-4xl font-extrabold my-1 text-accent">72°</span>
+                        <span id="temp-state" class="text-[10px] font-bold uppercase tracking-wider text-emerald-500">Heating Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temperature Slider -->
+            <div class="space-y-2 mb-6">
+                <div class="flex justify-between text-xs font-bold text-muted px-1">
+                    <span>60°F</span>
+                    <span>Set Point</span>
+                    <span>85°F</span>
+                </div>
+                <input type="range" min="60" max="85" value="72" class="neu-range" oninput="updateTemp(this.value)">
+            </div>
+
+            <!-- Mode Selector Buttons -->
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="setClimateMode(this, 'Cooling')" class="neu-button py-2.5 text-xs font-bold">Cool</button>
+                <button onclick="setClimateMode(this, 'Heating')" class="neu-button py-2.5 text-xs font-bold active-accent">Heat</button>
+                <button onclick="setClimateMode(this, 'Eco Saver')" class="neu-button py-2.5 text-xs font-bold">Eco</button>
+            </div>
+        </section>
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="music" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Audio Player</h2>
+                </div>
+                <!-- Equalizer Bar Animation -->
+                <div class="flex items-end gap-1 h-5 px-2" id="eq-container">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
+            </div>
+
+            <!-- Vinyl Album Art -->
+            <div class="flex items-center justify-center my-4">
+                <div class="w-40 h-40 rounded-full neu-flat p-3 flex items-center justify-center relative">
+                    <div id="vinyl-disc" class="w-32 h-32 rounded-full bg-slate-800 border-4 border-slate-700 flex items-center justify-center shadow-inner spinning-album">
+                        <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-md">
+                            <div class="w-4 h-4 rounded-full bg-slate-900"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track Info -->
+            <div class="text-center my-2">
+                <h3 class="font-bold text-base truncate">Synthwave Horizon</h3>
+                <p class="text-xs text-muted font-medium">Neon Dreams • Cyber Audio</p>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="flex items-center justify-center gap-4 my-3">
+                <button onclick="playSFX('click');" class="neu-icon-btn text-muted hover:text-accent">
+                    <i data-lucide="skip-back" class="w-5 h-5"></i>
+                </button>
+                <button id="play-pause-btn" onclick="toggleAudioPlay()" class="neu-icon-btn text-accent active">
+                    <i id="play-icon" data-lucide="pause" class="w-6 h-6"></i>
+                </button>
+                <button onclick="playSFX('click');" class="neu-icon-btn text-muted hover:text-accent">
+                    <i data-lucide="skip-forward" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Volume Slider -->
+            <div class="flex items-center gap-3 px-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-muted"></i>
+                <input type="range" min="0" max="100" value="80" class="neu-range" oninput="playSFX('tick');">
+            </div>
+        </section>
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="calculator" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Soft Calculator</h2>
+                </div>
+                <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full neu-pressed text-muted">v2.0</span>
+            </div>
+
+            <!-- Screen -->
+            <div class="neu-pressed p-4 rounded-2xl mb-4 text-right">
+                <div id="calc-history" class="h-4 text-xs font-semibold text-muted truncate"></div>
+                <div id="calc-display" class="text-3xl font-extrabold tracking-tight truncate mt-1">0</div>
+            </div>
+
+            <!-- Keypad Grid -->
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="calcClear()" class="neu-button py-3 text-xs font-bold text-rose-500">AC</button>
+                <button onclick="calcOp('/')" class="neu-button py-3 text-sm font-extrabold text-accent">÷</button>
+                <button onclick="calcOp('*')" class="neu-button py-3 text-sm font-extrabold text-accent">×</button>
+                <button onclick="calcOp('-')" class="neu-button py-3 text-sm font-extrabold text-accent">-</button>
+
+                <button onclick="calcNum('7')" class="neu-button py-3 text-sm font-bold">7</button>
+                <button onclick="calcNum('8')" class="neu-button py-3 text-sm font-bold">8</button>
+                <button onclick="calcNum('9')" class="neu-button py-3 text-sm font-bold">9</button>
+                <button onclick="calcOp('+')" class="neu-button py-3 text-sm font-extrabold text-accent">+</button>
+
+                <button onclick="calcNum('4')" class="neu-button py-3 text-sm font-bold">4</button>
+                <button onclick="calcNum('5')" class="neu-button py-3 text-sm font-bold">5</button>
+                <button onclick="calcNum('6')" class="neu-button py-3 text-sm font-bold">6</button>
+                <button onclick="calcEquals()" class="neu-button py-3 text-sm font-extrabold row-span-2 text-accent active-accent">=</button>
+
+                <button onclick="calcNum('1')" class="neu-button py-3 text-sm font-bold">1</button>
+                <button onclick="calcNum('2')" class="neu-button py-3 text-sm font-bold">2</button>
+                <button onclick="calcNum('3')" class="neu-button py-3 text-sm font-bold">3</button>
+
+                <button onclick="calcNum('0')" class="neu-button py-3 text-sm font-bold col-span-2">0</button>
+                <button onclick="calcNum('.')" class="neu-button py-3 text-sm font-bold">.</button>
+            </div>
+        </section>
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Activity Metrics</h2>
+                </div>
+                <i data-lucide="trending-up" class="w-5 h-5 text-emerald-500"></i>
+            </div>
+
+            <!-- Circular Progress Ring -->
+            <div class="flex items-center justify-center my-4">
+                <div class="relative flex items-center justify-center">
+                    <svg class="w-44 h-44">
+                        <circle class="text-slate-300 dark:text-slate-700" stroke-width="12" stroke="currentColor" fill="transparent" r="60" cx="88" cy="88" />
+                        <circle id="progress-circle" class="progress-ring-circle" stroke-width="12" stroke-linecap="round" fill="transparent" r="60" cx="88" cy="88" stroke-dasharray="376.99" stroke-dashoffset="113" />
+                    </svg>
+                    <div class="absolute flex flex-col items-center text-center">
+                        <span class="text-3xl font-extrabold text-accent">70%</span>
+                        <span class="text-[10px] font-bold text-muted uppercase">Daily Goal</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="neu-pressed p-3 flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-muted uppercase">Calories</span>
+                    <span class="text-base font-extrabold mt-0.5">1,840 kcal</span>
+                </div>
+                <div class="neu-pressed p-3 flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-muted uppercase">Steps</span>
+                    <span class="text-base font-extrabold mt-0.5">8,420</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="sun" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Ambient Lighting</h2>
+                </div>
+                <div class="neu-switch checked" onclick="toggleSwitch(this)">
+                    <div class="neu-switch-handle"></div>
+                </div>
+            </div>
+
+            <!-- Lighting Presets -->
+            <div class="space-y-4 my-2">
+                <div class="flex items-center justify-between p-3 neu-pressed rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="lamp" class="w-5 h-5 text-accent"></i>
+                        <div>
+                            <div class="text-xs font-bold">Living Room</div>
+                            <div class="text-[10px] text-muted font-medium">Warm White • 80%</div>
+                        </div>
+                    </div>
+                    <div class="neu-switch checked" onclick="toggleSwitch(this)">
+                        <div class="neu-switch-handle"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-3 neu-pressed rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>
+                        <div>
+                            <div class="text-xs font-bold">Studio Backlight</div>
+                            <div class="text-[10px] text-muted font-medium">Cyan Neon • 100%</div>
+                        </div>
+                    </div>
+                    <div class="neu-switch checked" onclick="toggleSwitch(this)">
+                        <div class="neu-switch-handle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brightness Slider -->
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs font-bold text-muted px-1">
+                    <span>Dim</span>
+                    <span>Intensity</span>
+                    <span>100%</span>
+                </div>
+                <input type="range" min="0" max="100" value="85" class="neu-range" oninput="playSFX('tick')">
+            </div>
+        </section>
+
+        <section class="neu-flat p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="neu-icon-btn text-accent">
+                        <i data-lucide="sliders" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-bold text-lg">Form Controls</h2>
+                </div>
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-accent"></i>
+            </div>
+
+            <form onsubmit="event.preventDefault();" class="space-y-4">
+                <!-- Text Input -->
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-muted uppercase">Device Name</label>
+                    <input type="text" value="Main Hub Alpha" class="w-full px-4 py-2.5 neu-input text-sm font-semibold">
+                </div>
+
+                <!-- Custom Dropdown -->
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-muted uppercase">Network Mode</label>
+                    <select class="w-full px-4 py-2.5 neu-input text-sm font-semibold cursor-pointer">
+                        <option>5GHz High Speed</option>
+                        <option>2.4GHz Long Range</option>
+                        <option>Mesh Node Sync</option>
+                    </select>
+                </div>
+
+                <!-- Radio Options Cards -->
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <button type="button" onclick="selectRadio(this)" class="neu-button py-2.5 px-3 text-xs font-bold active-accent flex items-center gap-2 justify-center">
+                        <i data-lucide="wifi" class="w-4 h-4"></i>
+                        Online
+                    </button>
+                    <button type="button" onclick="selectRadio(this)" class="neu-button py-2.5 px-3 text-xs font-bold flex items-center gap-2 justify-center">
+                        <i data-lucide="shield" class="w-4 h-4"></i>
+                        Secure
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // --- Web Audio Procedural Sound Generator ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSFX(type) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.04);
+                } else if (type === 'tick') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.015);
+                }
+            } catch (e) {}
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            playSFX('click');
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                icon.setAttribute('data-lucide', 'moon');
+                text.innerText = 'Dark Mode';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.setAttribute('data-lucide', 'sun');
+                text.innerText = 'Light Mode';
+            }
+            lucide.createIcons();
+        }
+
+        // --- Dynamic Accent Color Changer ---
+        function setAccent(color, glow) {
+            playSFX('click');
+            document.documentElement.style.setProperty('--accent-color', color);
+            document.documentElement.style.setProperty('--accent-glow', glow);
+        }
+
+        // --- Switch Toggle Helper ---
+        function toggleSwitch(element) {
+            playSFX('click');
+            element.classList.toggle('checked');
+        }
+
+        // --- Thermostat Logic ---
+        function updateTemp(val) {
+            playSFX('tick');
+            document.getElementById('temp-val').innerText = `${val}°`;
+        }
+
+        function setClimateMode(btn, mode) {
+            playSFX('click');
+            const container = btn.parentElement;
+            container.querySelectorAll('button').forEach(b => b.classList.remove('active-accent'));
+            btn.classList.add('active-accent');
+            document.getElementById('temp-state').innerText = `${mode} Active`;
+        }
+
+        // --- Music Player Logic ---
+        let isPlaying = true;
+        function toggleAudioPlay() {
+            playSFX('click');
+            isPlaying = !isPlaying;
+            const vinyl = document.getElementById('vinyl-disc');
+            const eq = document.getElementById('eq-container');
+            const icon = document.getElementById('play-icon');
+
+            if (isPlaying) {
+                vinyl.classList.remove('paused');
+                eq.classList.remove('eq-stopped');
+                icon.setAttribute('data-lucide', 'pause');
+            } else {
+                vinyl.classList.add('paused');
+                eq.classList.add('eq-stopped');
+                icon.setAttribute('data-lucide', 'play');
+            }
+            lucide.createIcons();
+        }
+
+        // --- Calculator Logic ---
+        let calcVal = '0';
+        let calcOpPrev = null;
+        let calcHist = '';
+
+        function updateCalcDisplay() {
+            document.getElementById('calc-display').innerText = calcVal;
+            document.getElementById('calc-history').innerText = calcHist;
+        }
+
+        function calcNum(num) {
+            playSFX('click');
+            if (calcVal === '0') {
+                calcVal = num;
+            } else {
+                calcVal += num;
+            }
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            playSFX('click');
+            calcVal = '0';
+            calcOpPrev = null;
+            calcHist = '';
+            updateCalcDisplay();
+        }
+
+        function calcOp(op) {
+            playSFX('click');
+            calcHist = `${calcVal} ${op}`;
+            calcOpPrev = op;
+            calcVal = '0';
+            updateCalcDisplay();
+        }
+
+        function calcEquals() {
+            playSFX('click');
+            if (!calcOpPrev) return;
+            try {
+                const expr = `${calcHist} ${calcVal}`.replace('×', '*').replace('÷', '/');
+                const result = eval(expr);
+                calcHist = `${calcHist} ${calcVal} =`;
+                calcVal = String(result);
+                calcOpPrev = null;
+                updateCalcDisplay();
+            } catch (e) {
+                calcVal = 'Error';
+                updateCalcDisplay();
+            }
+        }
+
+        // --- Radio Select Logic ---
+        function selectRadio(btn) {
+            playSFX('click');
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active-accent'));
+            btn.classList.add('active-accent');
+        }
+    </script>
+</body>
+</html>

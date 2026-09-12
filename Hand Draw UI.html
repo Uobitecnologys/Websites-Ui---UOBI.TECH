@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunday Market — Fresh from five farms, every Sunday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --paper:#EDE6D6;
+    --paper2:#E4DCC8;
+    --ink:#2B2620;
+    --red:#D64545;
+    --leaf:#5C8A3A;
+    --mustard:#E3A83B;
+    --sky:#6B93B0;
+    --card:#F7F2E7;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Nunito', sans-serif;
+    background-image:
+      radial-gradient(rgba(43,38,32,0.05) 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+
+  .hand{ font-family:'Kalam', cursive; }
+
+  a{ color:inherit; }
+
+  .container{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* wobbly blob shape reused everywhere */
+  .wobble{
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+  .wobble2{
+    border-radius: 15px 225px 15px 255px/225px 15px 255px 15px;
+  }
+
+  /* ---------------- HEADER ---------------- */
+  header{
+    padding:26px 0 10px;
+  }
+  header .container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:1.6rem;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  nav.links{
+    display:flex;
+    gap:30px;
+    font-weight:700;
+    font-size:1rem;
+  }
+  nav.links a{ position:relative; }
+  nav.links a:hover{ color:var(--red); }
+
+  .btn{
+    display:inline-block;
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:1.05rem;
+    padding:12px 24px;
+    background:var(--mustard);
+    color:var(--ink);
+    border:2.5px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: rotate(-1deg);
+  }
+  .btn.small{ padding:9px 18px; font-size:0.95rem; }
+
+  /* ---------------- HERO ---------------- */
+  .hero{
+    padding:56px 0 70px;
+  }
+  .hero .container{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+  }
+  .hero h1{
+    font-family:'Kalam', cursive;
+    font-size:clamp(2.3rem, 4.6vw, 3.4rem);
+    line-height:1.15;
+    max-width:14ch;
+  }
+  .hero .squiggle-wrap{ position:relative; display:inline-block; }
+  .hero svg.squiggle{
+    position:absolute;
+    left:0; bottom:-10px;
+    width:100%;
+  }
+  .hero p.lead{
+    margin-top:20px;
+    font-size:1.15rem;
+    max-width:40ch;
+    line-height:1.6;
+    color:#4a4238;
+  }
+  .hero .actions{
+    margin-top:28px;
+    display:flex;
+    gap:16px;
+    align-items:center;
+  }
+  .hero .actions .note{
+    font-family:'Kalam', cursive;
+    font-size:0.98rem;
+    color:#5a5245;
+  }
+
+  .hero-art{
+    position:relative;
+    display:flex;
+    justify-content:center;
+  }
+
+  /* ---------------- STALLS ---------------- */
+  .stalls{ padding:20px 0 80px; }
+  .stalls .head{
+    margin-bottom:36px;
+  }
+  .stalls .head h2{
+    font-family:'Kalam', cursive;
+    font-size:2rem;
+  }
+  .stalls .head p{
+    color:#4a4238;
+    margin-top:8px;
+  }
+  .stall-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:26px;
+  }
+  .stall{
+    background:var(--card);
+    border:2.5px solid var(--ink);
+    padding:26px 22px;
+    position:relative;
+  }
+  .stall:nth-child(1){ transform: rotate(-1.4deg); }
+  .stall:nth-child(2){ transform: rotate(1deg); }
+  .stall:nth-child(3){ transform: rotate(-0.6deg); }
+  .stall:nth-child(4){ transform: rotate(1.3deg); }
+  .stall:nth-child(5){ transform: rotate(-1deg); }
+  .stall:nth-child(6){ transform: rotate(0.8deg); }
+  .stall{
+    box-shadow: 5px 5px 0 rgba(43,38,32,0.9);
+  }
+  .stall .icon{ width:52px; height:52px; margin-bottom:14px; }
+  .stall h3{ font-family:'Kalam', cursive; font-size:1.25rem; }
+  .stall p{ margin-top:8px; font-size:0.95rem; color:#4a4238; line-height:1.5; }
+  .stall .tag{
+    display:inline-block;
+    margin-top:12px;
+    font-family:'Kalam', cursive;
+    font-size:0.85rem;
+    padding:3px 12px;
+    border:2px solid var(--ink);
+    background:var(--paper);
+  }
+
+  /* ---------------- TORN DIVIDER ---------------- */
+  .torn{
+    height:44px;
+    background:var(--ink);
+    clip-path: polygon(
+      0% 100%, 0% 20%, 4% 45%, 8% 10%, 12% 40%, 16% 5%, 20% 38%,
+      24% 12%, 28% 42%, 32% 8%, 36% 36%, 40% 14%, 44% 40%, 48% 6%,
+      52% 34%, 56% 16%, 60% 44%, 64% 4%, 68% 32%, 72% 18%, 76% 42%,
+      80% 10%, 84% 38%, 88% 6%, 92% 30%, 96% 12%, 100% 40%, 100% 100%
+    );
+  }
+
+  /* ---------------- HOW IT WORKS ---------------- */
+  .how{
+    background:var(--ink);
+    color:var(--paper);
+    padding:70px 0 90px;
+  }
+  .how .head h2{
+    font-family:'Kalam', cursive;
+    font-size:2rem;
+    color:var(--mustard);
+  }
+  .how .steps{
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:30px;
+  }
+  .step .num{
+    width:46px; height:46px;
+    border:3px solid var(--mustard);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Kalam', cursive;
+    font-size:1.3rem;
+    color:var(--mustard);
+    margin-bottom:14px;
+  }
+  .step h3{ font-family:'Kalam', cursive; font-size:1.2rem; }
+  .step p{ margin-top:8px; color:#D9D2C2; font-size:0.95rem; line-height:1.55; max-width:30ch; }
+
+  /* ---------------- SCHEDULE ---------------- */
+  .schedule{ padding:70px 0; }
+  .schedule .container{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:40px;
+    align-items:center;
+  }
+  .schedule .card{
+    background:var(--card);
+    border:2.5px solid var(--ink);
+    padding:32px;
+    box-shadow:6px 6px 0 var(--ink);
+    transform:rotate(-0.6deg);
+  }
+  .schedule .card .row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:2px dashed rgba(43,38,32,0.3);
+    font-weight:700;
+  }
+  .schedule .card .row:last-child{ border-bottom:none; }
+  .schedule h2{ font-family:'Kalam', cursive; font-size:2rem; margin-bottom:14px; }
+  .schedule p{ color:#4a4238; line-height:1.6; max-width:36ch; }
+
+  /* ---------------- NEWSLETTER ---------------- */
+  .news{
+    padding:20px 0 90px;
+  }
+  .news .box{
+    background:var(--sky);
+    border:2.5px solid var(--ink);
+    padding:44px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:30px;
+    box-shadow:6px 6px 0 var(--ink);
+  }
+  .news h2{
+    font-family:'Kalam', cursive;
+    font-size:1.7rem;
+    color:var(--ink);
+    max-width:16ch;
+  }
+  .news form{
+    display:flex;
+    gap:10px;
+  }
+  .news input{
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    padding:12px 16px;
+    border:2.5px solid var(--ink);
+    background:var(--paper);
+    font-size:1rem;
+    min-width:220px;
+  }
+  .news input:focus-visible{ outline:3px solid var(--red); outline-offset:2px; }
+
+  /* ---------------- FOOTER ---------------- */
+  footer{
+    padding:30px 0 40px;
+    display:flex;
+    justify-content:space-between;
+    font-size:0.92rem;
+    color:#5a5245;
+  }
+
+  @media (max-width:860px){
+    .hero .container{ grid-template-columns:1fr; }
+    .stall-grid{ grid-template-columns:1fr 1fr; }
+    .how .steps{ grid-template-columns:1fr; }
+    .schedule .container{ grid-template-columns:1fr; }
+    .news .box{ flex-direction:column; text-align:center; }
+    nav.links{ display:none; }
+  }
+  @media (max-width:560px){
+    .stall-grid{ grid-template-columns:1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ scroll-behavior:auto !important; }
+  }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="logo">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 3 C10 3 6 8 6 14 C6 20 10 26 15 27 C20 26 24 20 24 14 C24 8 20 3 15 3 Z" stroke="#2B2620" stroke-width="2" fill="#5C8A3A"/><path d="M15 3 C15 10 15 20 15 27" stroke="#2B2620" stroke-width="1.5"/></svg>
+        Sunday Market
+      </div>
+      <nav class="links">
+        <a href="#stalls">Stalls</a>
+        <a href="#how">How it works</a>
+        <a href="#schedule">Schedule</a>
+      </nav>
+      <a class="btn small" href="#news">Get the weekly list</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div>
+        <h1>
+          <span class="squiggle-wrap">
+            Fresh from five farms
+            <svg class="squiggle" viewBox="0 0 300 14" preserveAspectRatio="none"><path d="M2 8 Q 30 2, 60 8 T 120 8 T 180 8 T 240 8 T 298 8" stroke="#D64545" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+          </span>
+          every Sunday.
+        </h1>
+        <p class="lead">One block, nine to one, rain or shine. Bring a bag, bring cash or a card, and meet the people who grew what you're eating.</p>
+        <div class="actions">
+          <a class="btn" href="#stalls">See this week's stalls</a>
+          <span class="note hand">— it's this Sunday!</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg width="320" height="300" viewBox="0 0 320 300" fill="none">
+          <ellipse cx="160" cy="270" rx="120" ry="14" fill="#2B2620" opacity="0.08"/>
+          <path d="M90 260 L100 160 L220 160 L230 260 Z" fill="#E3A83B" stroke="#2B2620" stroke-width="3"/>
+          <path d="M100 160 L90 150 L230 150 L220 160 Z" fill="#F7F2E7" stroke="#2B2620" stroke-width="3"/>
+          <circle cx="130" cy="140" r="26" fill="#D64545" stroke="#2B2620" stroke-width="3"/>
+          <circle cx="170" cy="130" r="30" fill="#5C8A3A" stroke="#2B2620" stroke-width="3"/>
+          <circle cx="200" cy="150" r="22" fill="#E3A83B" stroke="#2B2620" stroke-width="3"/>
+          <path d="M130 114 Q135 100 145 108" stroke="#2B2620" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M170 100 Q175 86 186 94" stroke="#2B2620" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M130 200 h60" stroke="#2B2620" stroke-width="2" stroke-dasharray="4 5"/>
+          <path d="M120 220 h80" stroke="#2B2620" stroke-width="2" stroke-dasharray="4 5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="stalls" id="stalls">
+    <div class="container">
+      <div class="head">
+        <h2>This week's stalls</h2>
+        <p>Six farms set up shop this Sunday — first come, best pick.</p>
+      </div>
+      <div class="stall-grid">
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><path d="M30 8 C20 8 14 18 16 30 C18 42 24 50 30 52 C36 50 42 42 44 30 C46 18 40 8 30 8 Z" fill="#D64545" stroke="#2B2620" stroke-width="2.5"/><path d="M30 8 Q28 2 22 4" stroke="#2B2620" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          <h3>Hollow Road Farm</h3>
+          <p>Heirloom tomatoes, sweet peppers, and whatever's ripest that morning.</p>
+          <span class="tag hand">veg</span>
+        </div>
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><ellipse cx="30" cy="36" rx="22" ry="14" fill="#E3A83B" stroke="#2B2620" stroke-width="2.5"/><path d="M12 32 Q30 20 48 32" stroke="#2B2620" stroke-width="2" fill="none"/></svg>
+          <h3>Miller & Sons Bakery</h3>
+          <p>Sourdough boules and cinnamon rolls, out of the oven by 8am.</p>
+          <span class="tag hand">bread</span>
+        </div>
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><path d="M20 20 h20 v24 a10 10 0 0 1 -20 0 z" fill="#F7F2E7" stroke="#2B2620" stroke-width="2.5"/><rect x="18" y="14" width="24" height="8" rx="2" fill="#E3A83B" stroke="#2B2620" stroke-width="2.5"/></svg>
+          <h3>Golden Hive Apiary</h3>
+          <p>Raw honey by the jar, plus beeswax candles rolled by hand.</p>
+          <span class="tag hand">honey</span>
+        </div>
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><path d="M30 10 C24 10 20 16 22 24 C24 32 27 38 30 40 C33 38 36 32 38 24 C40 16 36 10 30 10 Z" fill="#5C8A3A" stroke="#2B2620" stroke-width="2.5"/><path d="M30 40 L30 52" stroke="#2B2620" stroke-width="2.5"/></svg>
+          <h3>Blue Fern Greens</h3>
+          <p>Salad mixes, herbs, and whatever leafy thing looked good this week.</p>
+          <span class="tag hand">greens</span>
+        </div>
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><path d="M18 24 Q30 12 42 24 L42 40 Q30 48 18 40 Z" fill="#F7F2E7" stroke="#2B2620" stroke-width="2.5"/><circle cx="30" cy="30" r="4" fill="#E3A83B"/></svg>
+          <h3>Thistledown Dairy</h3>
+          <p>Small-batch cheese, yogurt, and butter from a herd of thirty.</p>
+          <span class="tag hand">dairy</span>
+        </div>
+
+        <div class="stall">
+          <svg class="icon" viewBox="0 0 60 60"><circle cx="22" cy="26" r="8" fill="#D64545" stroke="#2B2620" stroke-width="2"/><circle cx="34" cy="20" r="8" fill="#E3A83B" stroke="#2B2620" stroke-width="2"/><circle cx="38" cy="34" r="8" fill="#6B93B0" stroke="#2B2620" stroke-width="2"/><path d="M28 40 L28 50" stroke="#2B2620" stroke-width="2.5"/></svg>
+          <h3>Wildflower Cart</h3>
+          <p>Cut flowers by the bunch, grown in the field behind the barn.</p>
+          <span class="tag hand">flowers</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="torn"></div>
+
+  <section class="how" id="how">
+    <div class="container">
+      <div class="head">
+        <h2>How Sunday works</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Find your stall</h3>
+          <p>Pick up a paper map at the entrance, or check the list above before you go.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Bring a bag</h3>
+          <p>Most stalls have boxes to spare, but your own basket makes the walk home easier.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Pay any way</h3>
+          <p>Cash, card, or tap — every stall takes both, no minimum required.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="schedule" id="schedule">
+    <div class="container">
+      <div>
+        <h2 class="hand">Every Sunday, rain or shine</h2>
+        <p>Set up on Hollow Street between the old mill and the church steps. Late arrivals still find plenty — most stalls sell through 1pm.</p>
+      </div>
+      <div class="card">
+        <div class="row"><span>Setup</span><span>7:30 – 9:00</span></div>
+        <div class="row"><span>Market open</span><span>9:00 – 1:00</span></div>
+        <div class="row"><span>Best pick</span><span>before 10:30</span></div>
+        <div class="row"><span>Location</span><span>Hollow Street</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="news" id="news">
+    <div class="container">
+      <div class="box">
+        <h2>Get next Sunday's stall list in your inbox.</h2>
+        <form>
+          <input type="email" placeholder="you@email.com" aria-label="Email address">
+          <button class="btn small" type="submit">Sign me up</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; width:100%;">
+      <div>© 2026 Sunday Market Collective</div>
+      <div>Hollow Street · rain or shine</div>
+    </div>
+  </footer>
+
+</body>
+</html>

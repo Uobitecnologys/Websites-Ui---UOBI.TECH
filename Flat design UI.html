@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clima — Weather that fits your street</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --sky:#3D5AFE;
+    --sun:#FFC93C;
+    --cloud:#F4F6F8;
+    --ink:#1B1F3B;
+    --rain:#00B8A9;
+    --storm:#FF6B6B;
+    --white:#FFFFFF;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--cloud);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .mono{ font-family:'Space Mono', monospace; }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  /* ---------------- HEADER ---------------- */
+  header{
+    padding:26px 0;
+  }
+  header .container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:1.25rem;
+  }
+  .logo .dot{
+    width:26px; height:26px;
+    border-radius:50%;
+    background:var(--sun);
+    position:relative;
+    flex-shrink:0;
+  }
+  .logo .dot::after{
+    content:"";
+    position:absolute;
+    top:2px; right:-6px;
+    width:16px; height:16px;
+    background:var(--white);
+    border-radius:50% 50% 50% 0;
+  }
+  nav.links{
+    display:flex;
+    gap:36px;
+    font-weight:700;
+    font-size:0.95rem;
+  }
+  .btn{
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:0.95rem;
+    display:inline-block;
+  }
+  .btn.primary{
+    background:var(--sky);
+    color:var(--white);
+  }
+  .btn.ghost{
+    background:transparent;
+    border:2px solid var(--ink);
+    color:var(--ink);
+  }
+
+  /* ---------------- HERO ---------------- */
+  .hero{
+    padding: 48px 0 90px;
+  }
+  .hero .container{
+    display:grid;
+    grid-template-columns: 1fr 0.85fr;
+    gap:48px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+    font-weight:800;
+    line-height:1.08;
+    max-width:12ch;
+    letter-spacing:-0.01em;
+  }
+  .hero p.lead{
+    margin-top:22px;
+    font-size:1.15rem;
+    color:#4C5178;
+    max-width:38ch;
+    line-height:1.6;
+  }
+  .hero .actions{
+    margin-top:32px;
+    display:flex;
+    gap:14px;
+  }
+  .hero .trust{
+    margin-top:34px;
+    display:flex;
+    gap:26px;
+    font-size:0.88rem;
+    color:#6B6F94;
+  }
+  .hero .trust strong{
+    color:var(--ink);
+    font-family:'Space Mono', monospace;
+    font-size:1rem;
+  }
+
+  /* phone mockup */
+  .phone{
+    background:var(--white);
+    border-radius:32px;
+    width:280px;
+    margin:0 auto;
+    padding:20px;
+    position:relative;
+  }
+  .phone .screen{
+    background:var(--sky);
+    border-radius:22px;
+    padding:26px 22px 22px;
+    color:var(--white);
+    min-height:420px;
+    position:relative;
+    overflow:hidden;
+  }
+  .phone .place{
+    font-size:0.85rem;
+    opacity:0.85;
+    font-weight:700;
+  }
+  .phone .temp{
+    font-family:'Space Mono', monospace;
+    font-size:4.2rem;
+    font-weight:700;
+    margin-top:6px;
+    line-height:1;
+  }
+  .phone .cond{
+    margin-top:6px;
+    font-weight:700;
+    font-size:1.05rem;
+  }
+  .sun-icon{
+    position:absolute;
+    top:18px; right:18px;
+    width:64px; height:64px;
+    border-radius:50%;
+    background:var(--sun);
+  }
+  .cloud-shape{
+    position:absolute;
+    bottom:26px; left:-10px;
+    width:210px; height:70px;
+  }
+  .cloud-shape .c1, .cloud-shape .c2, .cloud-shape .c3{
+    position:absolute;
+    background:var(--white);
+    border-radius:50%;
+    opacity:0.9;
+  }
+  .cloud-shape .c1{ width:90px; height:90px; left:20px; bottom:-10px; }
+  .cloud-shape .c2{ width:70px; height:70px; left:80px; bottom:0px; }
+  .cloud-shape .c3{ width:60px; height:60px; left:130px; bottom:-14px; }
+  .phone .hi-lo{
+    position:relative;
+    z-index:2;
+    margin-top:70px;
+    display:flex;
+    gap:18px;
+    font-size:0.9rem;
+    font-weight:700;
+  }
+
+  /* ---------------- WEEK STRIP ---------------- */
+  .week{
+    background:var(--ink);
+    padding:34px 0;
+  }
+  .week .container{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .day{
+    color:var(--white);
+    text-align:center;
+    flex:1;
+  }
+  .day .d{
+    font-size:0.82rem;
+    font-weight:700;
+    opacity:0.7;
+  }
+  .day .icon{
+    width:34px; height:34px;
+    border-radius:50%;
+    margin:14px auto;
+  }
+  .day .t{
+    font-family:'Space Mono', monospace;
+    font-size:1rem;
+    font-weight:700;
+  }
+  .day .t span{
+    opacity:0.55;
+    font-weight:400;
+  }
+
+  /* ---------------- FEATURES ---------------- */
+  .features{
+    padding:100px 0;
+  }
+  .features .head{
+    max-width:46ch;
+    margin-bottom:52px;
+  }
+  .features .head h2{
+    font-size:2.1rem;
+    font-weight:800;
+    letter-spacing:-0.01em;
+  }
+  .features .head p{
+    margin-top:14px;
+    color:#4C5178;
+    font-size:1.05rem;
+    line-height:1.6;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap:20px;
+  }
+  .block{
+    border-radius:20px;
+    padding:34px;
+    color:var(--white);
+  }
+  .block h3{
+    font-size:1.35rem;
+    font-weight:800;
+  }
+  .block p{
+    margin-top:12px;
+    font-size:0.98rem;
+    line-height:1.55;
+    opacity:0.92;
+    max-width:34ch;
+  }
+  .block.tall{ grid-row: span 2; display:flex; flex-direction:column; justify-content:space-between; min-height:420px; }
+  .block.b1{ background:var(--sky); }
+  .block.b2{ background:var(--rain); }
+  .block.b3{ background:var(--sun); color:var(--ink); }
+  .block.b4{ background:var(--white); color:var(--ink); border:2px solid #E3E6F0; }
+  .block.b5{ background:var(--storm); }
+
+  .shape{
+    width:56px; height:56px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.25);
+  }
+  .block.b3 .shape, .block.b4 .shape{ background:rgba(27,31,59,0.1); }
+
+  /* ---------------- CTA ---------------- */
+  .cta-band{
+    background:var(--sky);
+    border-radius:28px;
+    margin:0 32px 100px;
+    padding:64px 48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:32px;
+    color:var(--white);
+    max-width:1116px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .cta-band h2{
+    font-size:2rem;
+    font-weight:800;
+    max-width:16ch;
+  }
+  .cta-band .btn.primary{
+    background:var(--white);
+    color:var(--sky);
+  }
+
+  /* ---------------- FOOTER ---------------- */
+  footer{
+    padding:36px 0 48px;
+    display:flex;
+    justify-content:space-between;
+    color:#6B6F94;
+    font-size:0.9rem;
+  }
+
+  @media (max-width:860px){
+    .hero .container{ grid-template-columns:1fr; }
+    .phone{ margin-top:20px; }
+    .grid{ grid-template-columns:1fr 1fr; }
+    .block.tall{ grid-row:auto; min-height:auto; }
+    nav.links{ display:none; }
+    .week .container{ overflow-x:auto; }
+    .cta-band{ flex-direction:column; text-align:center; margin:0 20px 70px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ scroll-behavior:auto !important; }
+  }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="logo"><span class="dot"></span> Clima</div>
+      <nav class="links">
+        <a href="#week">Forecast</a>
+        <a href="#features">Features</a>
+        <a href="#get">Get the app</a>
+      </nav>
+      <a class="btn primary" href="#get">Get Clima</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div>
+        <h1>Weather that fits your street, not your city.</h1>
+        <p class="lead">Clima reads live sensor and radar data down to the block level, so you know if it's raining on your side of town before you step outside.</p>
+        <div class="actions">
+          <a class="btn primary" href="#get">Get Clima free</a>
+          <a class="btn ghost" href="#features">See how it works</a>
+        </div>
+        <div class="trust">
+          <div><strong>2.1M</strong><br>daily forecasts</div>
+          <div><strong>94%</strong><br>hourly accuracy</div>
+          <div><strong>190</strong><br>countries covered</div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="screen">
+          <div class="place">Prenzlauer Berg</div>
+          <div class="temp mono">18°</div>
+          <div class="cond">Partly cloudy</div>
+          <div class="sun-icon"></div>
+          <div class="cloud-shape">
+            <div class="c1"></div><div class="c2"></div><div class="c3"></div>
+          </div>
+          <div class="hi-lo mono">
+            <div>H: 21°</div>
+            <div>L: 12°</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="week" id="week">
+    <div class="container">
+      <div class="day">
+        <div class="d">Mon</div>
+        <div class="icon" style="background:var(--sun)"></div>
+        <div class="t mono">21° <span>12°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Tue</div>
+        <div class="icon" style="background:var(--sun)"></div>
+        <div class="t mono">22° <span>13°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Wed</div>
+        <div class="icon" style="background:var(--white); opacity:0.85"></div>
+        <div class="t mono">18° <span>11°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Thu</div>
+        <div class="icon" style="background:var(--rain)"></div>
+        <div class="t mono">15° <span>9°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Fri</div>
+        <div class="icon" style="background:var(--rain)"></div>
+        <div class="t mono">14° <span>8°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Sat</div>
+        <div class="icon" style="background:var(--white); opacity:0.85"></div>
+        <div class="t mono">17° <span>10°</span></div>
+      </div>
+      <div class="day">
+        <div class="d">Sun</div>
+        <div class="icon" style="background:var(--sun)"></div>
+        <div class="t mono">20° <span>12°</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <div class="head">
+        <h2>Built for the moment you check it.</h2>
+        <p>Every screen in Clima answers one question fast: what do I need to know right now, and what do I do about it.</p>
+      </div>
+      <div class="grid">
+        <div class="block tall b1">
+          <div>
+            <div class="shape"></div>
+            <h3>Hyperlocal radar</h3>
+            <p>See rain arrive minute by minute on a map built from thousands of local sensors, not a regional average.</p>
+          </div>
+          <p style="margin-top:0; opacity:0.75;">Updated every 90 seconds</p>
+        </div>
+        <div class="block b2">
+          <div class="shape"></div>
+          <h3>Rain alerts</h3>
+          <p>A push notification 12 minutes before rain reaches your exact location, timed to when you can still grab a jacket.</p>
+        </div>
+        <div class="block b3">
+          <div class="shape"></div>
+          <h3>Home screen widgets</h3>
+          <p>Today's high, low, and rain chance, visible without opening the app.</p>
+        </div>
+        <div class="block b4">
+          <div class="shape"></div>
+          <h3>Offline forecasts</h3>
+          <p>The last synced forecast stays available even with no signal, so you're never left guessing.</p>
+        </div>
+        <div class="block b5">
+          <div class="shape"></div>
+          <h3>Severe weather warnings</h3>
+          <p>Storm, heat, and flood alerts sourced directly from national weather services, sent the moment they're issued.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band" id="get">
+    <h2>Check the sky before it checks you.</h2>
+    <a class="btn primary" href="#">Download Clima — free</a>
+  </div>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; width:100%;">
+      <div>© 2026 Clima Weather</div>
+      <div>Made for iOS, Android and web</div>
+    </div>
+  </footer>
+
+</body>
+</html>

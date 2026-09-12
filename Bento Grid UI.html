@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Bento Grid Portfolio & Dashboard</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration for Custom Theme Colors -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bento: {
+                            bg: '#090a0f',
+                            card: 'rgba(18, 20, 29, 0.75)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            lightBg: '#f4f5f9',
+                            lightCard: 'rgba(255, 255, 255, 0.85)',
+                            lightBorder: 'rgba(0, 0, 0, 0.08)'
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 22s linear infinite',
+                        'pulse-glow': 'pulseGlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4' },
+                            '50%': { opacity: '0.8' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --card-glow: rgba(168, 85, 247, 0.15);
+        }
+
+        /* Glassmorphism & Custom Bento Styling */
+        .bento-card {
+            position: relative;
+            background: rgba(18, 22, 32, 0.65);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        border-color 0.3s ease,
+                        background-color 0.3s ease;
+            overflow: hidden;
+        }
+
+        html:not(.dark) .bento-card {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .bento-card:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 25px var(--card-glow);
+        }
+
+        html:not(.dark) .bento-card:hover {
+            border-color: rgba(147, 51, 234, 0.3);
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.08), 0 0 20px rgba(168, 85, 247, 0.15);
+        }
+
+        /* Dynamic Spotlight Gradient Overlay */
+        .bento-spotlight {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.06), transparent 40%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        html:not(.dark) .bento-spotlight {
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 0, 0, 0.03), transparent 40%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.7); }
+
+        /* Audio Wave Animation */
+        @keyframes wavePulse {
+            0%, 100% { height: 6px; }
+            50% { height: 28px; }
+        }
+        .animate-wave-1 { animation: wavePulse 1.2s ease-in-out infinite; }
+        .animate-wave-2 { animation: wavePulse 0.9s ease-in-out infinite 0.2s; }
+        .animate-wave-3 { animation: wavePulse 1.4s ease-in-out infinite 0.4s; }
+        .animate-wave-4 { animation: wavePulse 1.0s ease-in-out infinite 0.1s; }
+        .animate-wave-5 { animation: wavePulse 1.3s ease-in-out infinite 0.3s; }
+    </style>
+</head>
+<body class="bg-[#090a0f] text-slate-100 font-sans min-h-screen transition-colors duration-300 selection:bg-purple-500 selection:text-white dark:bg-[#090a0f] dark:text-slate-100 antialiased" id="body-root">
+
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[140px] animate-pulse-glow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-cyan-600/10 rounded-full blur-[160px] animate-pulse-glow" style="animation-delay: 2s;"></div>
+        <div class="absolute top-[40%] right-[20%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse-glow" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-800/60 dark:border-slate-800/60 light:border-slate-200">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-purple-500/20">
+                    <div class="w-full h-full bg-slate-950 dark:bg-slate-950 light:bg-white rounded-[15px] flex items-center justify-center">
+                        <i data-lucide="layout-grid" class="w-5 h-5 text-purple-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight flex items-center gap-2">
+                        <span>AURA</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-purple-500/15 text-purple-400 border border-purple-500/30">Bento v2.5</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 dark:text-slate-400 light:text-slate-500 font-medium">Interactive Spatial Dashboard & Portfolio Workspace</p>
+                </div>
+            </div>
+
+            <!-- Bento Filter Category Pill Navigation -->
+            <div class="flex items-center gap-1.5 p-1.5 bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-200/80 rounded-2xl border border-slate-800 dark:border-slate-800 light:border-slate-300 backdrop-blur-md">
+                <button onclick="filterBentoCards('all')" id="filter-all" class="bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-600 text-white shadow-md transition-all">All</button>
+                <button onclick="filterBentoCards('analytics')" id="filter-analytics" class="bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">Metrics</button>
+                <button onclick="filterBentoCards('media')" id="filter-media" class="bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">Media</button>
+                <button onclick="filterBentoCards('productivity')" id="filter-productivity" class="bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">Tasks</button>
+            </div>
+
+            <!-- Dark / Light Theme Toggle & Social Links -->
+            <div class="flex items-center gap-3">
+                <button id="theme-toggle-btn" onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-200 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-slate-300 dark:text-slate-300 light:text-slate-700 hover:text-purple-400 transition-colors shadow-sm" title="Toggle Theme">
+                    <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <a href="#quick-contact" class="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-600/30">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Connect</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-5 auto-rows-[180px]">
+
+            <!-- CARD 1: HERO / MAIN PROFILE CARD (Spans 8 cols, 2 rows) -->
+            <div id="card-hero" data-category="analytics" class="bento-card bento-item md:col-span-6 lg:col-span-8 lg:row-span-2 p-6 sm:p-8 flex flex-col justify-between group">
+                <div class="bento-spotlight"></div>
+                
+                <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Avatar" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-purple-500/40 shadow-xl">
+                            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-950 dark:border-slate-950 light:border-white shadow-md"></span>
+                        </div>
+                        <div>
+                            <span id="dynamic-greeting" class="text-xs font-mono font-semibold text-purple-400 uppercase tracking-widest">Good Day</span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 dark:text-slate-100 light:text-slate-900">Alex Morgan</h2>
+                            <p class="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 font-medium">Lead Spatial & UI Systems Architect</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold tracking-wide">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>Available for Projects</span>
+                    </div>
+                </div>
+
+                <div class="relative z-10 my-4 space-y-3">
+                    <p class="text-sm sm:text-base text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed max-w-2xl font-normal">
+                        Crafting pixel-perfect <span class="text-purple-400 font-semibold">Bento Grid interfaces</span>, immersive web experiences, and scalable design systems. Blending performance with refined aesthetic elegance.
+                    </p>
+                </div>
+
+                <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200">
+                    <div class="flex items-center gap-6">
+                        <div>
+                            <div class="text-xl font-extrabold font-mono text-slate-100 dark:text-slate-100 light:text-slate-900">140+</div>
+                            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Projects Built</div>
+                        </div>
+                        <div class="w-[1px] h-8 bg-slate-800 dark:bg-slate-800 light:bg-slate-200"></div>
+                        <div>
+                            <div class="text-xl font-extrabold font-mono text-slate-100 dark:text-slate-100 light:text-slate-900">99.8%</div>
+                            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Satisfaction</div>
+                        </div>
+                        <div class="w-[1px] h-8 bg-slate-800 dark:bg-slate-800 light:bg-slate-200"></div>
+                        <div>
+                            <div class="text-xl font-extrabold font-mono text-slate-100 dark:text-slate-100 light:text-slate-900">8+ Yrs</div>
+                            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Experience</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="openCardModal('Overview', 'Deep dive into profile highlights, design philosophy, and career milestones.')" class="px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all border border-slate-700/60 flex items-center gap-1.5">
+                            <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                            <span>Details</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: LIVE CLOCK & LOCATION WIDGET (Spans 4 cols, 1 row) -->
+            <div id="card-clock" data-category="analytics" class="bento-card bento-item md:col-span-6 lg:col-span-4 lg:row-span-1 p-5 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Timezone Telemetry</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-mono">UTC+5</span>
+                </div>
+
+                <div class="relative z-10 my-2">
+                    <div id="bento-clock" class="text-3xl font-extrabold font-mono text-slate-100 dark:text-slate-100 light:text-slate-900 tracking-tight">12:00:00 PM</div>
+                    <div id="bento-date" class="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 mt-1 font-medium">Saturday, Sep 12, 2026</div>
+                </div>
+
+                <div class="relative z-10 flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200">
+                    <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-purple-400"></i> Karachi, PK</span>
+                    <span class="text-[10px] text-emerald-400 font-mono">Online Status</span>
+                </div>
+            </div>
+
+            <!-- CARD 3: INTERACTIVE WEATHER WIDGET (Spans 4 cols, 1 row) -->
+            <div id="card-weather" data-category="analytics" class="bento-card bento-item md:col-span-6 lg:col-span-4 lg:row-span-1 p-5 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="cloud-sun" class="w-4 h-4 text-amber-400"></i>
+                        <span>Local Climate</span>
+                    </div>
+                    <span class="text-xs font-mono text-amber-400 font-bold">29°C</span>
+                </div>
+
+                <div class="relative z-10 flex items-center justify-between my-1">
+                    <div>
+                        <div class="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900">Mostly Clear</div>
+                        <div class="text-xs text-slate-400">Humidity 64% • Wind 12 km/h</div>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <i data-lucide="sun" class="w-7 h-7 animate-spin" style="animation-duration: 20s;"></i>
+                    </div>
+                </div>
+
+                <!-- Weather Micro Forecast -->
+                <div class="relative z-10 grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-center">
+                    <div>
+                        <div class="text-[10px] text-slate-400">Mon</div>
+                        <div class="text-xs font-bold text-slate-200 dark:text-slate-200 light:text-slate-800">30°</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400">Tue</div>
+                        <div class="text-xs font-bold text-slate-200 dark:text-slate-200 light:text-slate-800">28°</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400">Wed</div>
+                        <div class="text-xs font-bold text-slate-200 dark:text-slate-200 light:text-slate-800">31°</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 4: INTERACTIVE ANALYTICS / CANVAS GRAPH (Spans 8 cols, 2 rows) -->
+            <div id="card-analytics" data-category="analytics" class="bento-card bento-item md:col-span-6 lg:col-span-8 lg:row-span-2 p-6 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <i data-lucide="line-chart" class="w-4 h-4 text-purple-400"></i>
+                            <span>Real-Time Growth & Analytics</span>
+                        </div>
+                        <h3 id="analytics-metric-title" class="text-lg font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 mt-0.5">Total Page Impressions</h3>
+                    </div>
+
+                    <!-- Metric Toggle Buttons -->
+                    <div class="flex items-center gap-1 bg-slate-900/90 dark:bg-slate-900/90 light:bg-slate-200/90 p-1 rounded-xl border border-slate-800 dark:border-slate-800 light:border-slate-300">
+                        <button onclick="switchMetric('views')" id="metric-views" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-600 text-white transition-all">Views</button>
+                        <button onclick="switchMetric('revenue')" id="metric-revenue" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">Revenue</button>
+                        <button onclick="switchMetric('conversion')" id="metric-conversion" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">Growth</button>
+                    </div>
+                </div>
+
+                <!-- Canvas Chart Container -->
+                <div class="relative z-10 w-full h-44 my-2 rounded-xl bg-slate-950/40 dark:bg-slate-950/40 light:bg-slate-100/80 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 p-2">
+                    <canvas id="analytics-canvas" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Footer Summary Metric Stats -->
+                <div class="relative z-10 grid grid-cols-3 gap-3 pt-3 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 rounded-xl bg-purple-500/10 text-purple-400"><i data-lucide="eye" class="w-4 h-4"></i></div>
+                        <div>
+                            <div class="text-[10px] text-slate-400">Peak Views</div>
+                            <div class="font-extrabold font-mono text-slate-200 dark:text-slate-200 light:text-slate-800">48.2k / mo</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
+                        <div>
+                            <div class="text-[10px] text-slate-400">Growth Rate</div>
+                            <div class="font-extrabold font-mono text-slate-200 dark:text-slate-200 light:text-slate-800">+34.8%</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                        <div>
+                            <div class="text-[10px] text-slate-400">Engagement</div>
+                            <div class="font-extrabold font-mono text-slate-200 dark:text-slate-200 light:text-slate-800">92.4%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 5: INTERACTIVE MUSIC / AUDIO PLAYER WIDGET (Spans 4 cols, 2 rows) -->
+            <div id="card-media" data-category="media" class="bento-card bento-item md:col-span-6 lg:col-span-4 lg:row-span-2 p-6 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="music" class="w-4 h-4 text-pink-400"></i>
+                        <span>Audio Soundscape</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md bg-pink-500/10 text-pink-400 text-[10px] font-mono border border-pink-500/20">Web Audio API</span>
+                </div>
+
+                <!-- Album Art & Track Info -->
+                <div class="relative z-10 flex items-center gap-4 my-3 p-3 rounded-2xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80" alt="Album Cover" class="w-14 h-14 rounded-xl object-cover shadow-lg">
+                    <div class="overflow-hidden">
+                        <h4 id="track-title" class="text-sm font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 truncate">Neon Horizon</h4>
+                        <p id="track-artist" class="text-xs text-slate-400 truncate">Synthesized Synthwave</p>
+                        <div class="text-[10px] text-purple-400 font-mono mt-0.5">440 Hz Spatial Tone</div>
+                    </div>
+                </div>
+
+                <!-- Visualizer Bars -->
+                <div class="relative z-10 flex items-end justify-center gap-1.5 h-10 my-1 bg-slate-950/40 dark:bg-slate-950/40 light:bg-slate-100 rounded-xl p-2 border border-slate-800/40 dark:border-slate-800/40 light:border-slate-200">
+                    <div class="w-1.5 bg-purple-500 rounded-full animate-wave-1"></div>
+                    <div class="w-1.5 bg-indigo-500 rounded-full animate-wave-2"></div>
+                    <div class="w-1.5 bg-cyan-400 rounded-full animate-wave-3"></div>
+                    <div class="w-1.5 bg-pink-500 rounded-full animate-wave-4"></div>
+                    <div class="w-1.5 bg-amber-400 rounded-full animate-wave-5"></div>
+                    <div class="w-1.5 bg-purple-400 rounded-full animate-wave-2"></div>
+                    <div class="w-1.5 bg-cyan-500 rounded-full animate-wave-4"></div>
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="relative z-10 flex items-center justify-between gap-2 pt-3 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200">
+                    <button onclick="changeTrack(-1)" class="p-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-300 transition-colors"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
+                    <button id="audio-play-btn" onclick="toggleAudioSynthesis()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all">
+                        <i id="audio-play-icon" data-lucide="play" class="w-4 h-4"></i>
+                        <span id="audio-play-text">Synthesize Sound</span>
+                    </button>
+                    <button onclick="changeTrack(1)" class="p-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-300 transition-colors"><i data-lucide="skip-forward" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+
+            <!-- CARD 6: INTERACTIVE TO-DO / TASK TRACKER (Spans 6 cols, 2 rows) -->
+            <div id="card-tasks" data-category="productivity" class="bento-card bento-item md:col-span-6 lg:col-span-6 lg:row-span-2 p-6 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="check-square" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Task Tracker & Sprint</span>
+                    </div>
+                    <div id="task-progress-text" class="text-xs font-mono text-emerald-400 font-bold">2 / 4 Completed</div>
+                </div>
+
+                <!-- Task Progress Bar -->
+                <div class="relative z-10 w-full bg-slate-900 dark:bg-slate-900 light:bg-slate-200 h-2 rounded-full overflow-hidden mb-3">
+                    <div id="task-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full w-1/2 transition-all duration-500"></div>
+                </div>
+
+                <!-- Task Add Form -->
+                <form onsubmit="addNewTask(event)" class="relative z-10 flex gap-2 mb-3">
+                    <input type="text" id="new-task-input" placeholder="Add new milestone..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-xs text-slate-100 dark:text-slate-100 light:text-slate-900 focus:outline-none focus:border-purple-500 transition-colors">
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <!-- Task List Container -->
+                <div id="task-list" class="relative z-10 space-y-2 overflow-y-auto max-h-40 pr-1">
+                    <div class="task-item flex items-center justify-between p-2.5 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-100 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                        <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                            <input type="checkbox" checked onchange="updateTaskProgress()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                            <span class="line-through text-slate-500">Finalize Spatial UI Layout</span>
+                        </label>
+                        <span class="text-[10px] text-slate-400 font-mono">Done</span>
+                    </div>
+
+                    <div class="task-item flex items-center justify-between p-2.5 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-100 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                        <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                            <input type="checkbox" checked onchange="updateTaskProgress()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                            <span class="line-through text-slate-500">Optimize Web Audio Synthesizer</span>
+                        </label>
+                        <span class="text-[10px] text-slate-400 font-mono">Done</span>
+                    </div>
+
+                    <div class="task-item flex items-center justify-between p-2.5 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-100 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                        <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                            <input type="checkbox" onchange="updateTaskProgress()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                            <span class="text-slate-200 dark:text-slate-200 light:text-slate-800">Deploy Bento Grid v2.5 to Vercel</span>
+                        </label>
+                        <span class="text-[10px] text-amber-400 font-mono">In Progress</span>
+                    </div>
+
+                    <div class="task-item flex items-center justify-between p-2.5 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-100 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                        <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                            <input type="checkbox" onchange="updateTaskProgress()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                            <span class="text-slate-200 dark:text-slate-200 light:text-slate-800">Conduct Client UI Review</span>
+                        </label>
+                        <span class="text-[10px] text-purple-400 font-mono">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 7: TECH STACK & SKILLS MARQUEE (Spans 6 cols, 1 row) -->
+            <div id="card-tech" data-category="productivity" class="bento-card bento-item md:col-span-6 lg:col-span-6 lg:row-span-1 p-5 flex flex-col justify-between overflow-hidden">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+                        <span>Technology Stack & Tools</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-indigo-400">Modern Architecture</span>
+                </div>
+
+                <!-- Infinite Marquee Track -->
+                <div class="relative z-10 w-full overflow-hidden my-2 py-1">
+                    <div class="flex whitespace-nowrap animate-marquee gap-3">
+                        <span class="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs font-mono font-medium">React 19</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-xs font-mono font-medium">TypeScript</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-mono font-medium">Tailwind CSS</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs font-mono font-medium">Next.js 15</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-pink-500/10 text-pink-300 border border-pink-500/20 text-xs font-mono font-medium">Three.js</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs font-mono font-medium">WebAudio</span>
+                        <!-- Duplicate for Seamless Marquee Loop -->
+                        <span class="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs font-mono font-medium">React 19</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-xs font-mono font-medium">TypeScript</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-mono font-medium">Tailwind CSS</span>
+                        <span class="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs font-mono font-medium">Next.js 15</span>
+                    </div>
+                </div>
+
+                <div class="relative z-10 flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                    <span>Performance Focused</span>
+                    <span class="text-indigo-400 font-semibold">100 / 100 Lighthouse</span>
+                </div>
+            </div>
+
+            <!-- CARD 8: QUICK CONTACT FORM CARD (Spans 12 cols, 2 rows) -->
+            <div id="quick-contact" data-category="productivity" class="bento-card bento-item md:col-span-6 lg:col-span-12 lg:row-span-2 p-6 sm:p-8 flex flex-col justify-between">
+                <div class="bento-spotlight"></div>
+
+                <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <i data-lucide="send" class="w-4 h-4 text-purple-400"></i>
+                            <span>Quick Communication Hub</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 mt-0.5">Let's Build Something Exceptional</h3>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-mono">Response time ~ 1 hour</span>
+                </div>
+
+                <!-- Form Fields -->
+                <form onsubmit="handleContactSubmit(event)" class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Your Name</label>
+                        <input type="text" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-xs text-slate-100 dark:text-slate-100 light:text-slate-900 focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+                        <input type="email" required placeholder="john@example.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-xs text-slate-100 dark:text-slate-100 light:text-slate-900 focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                    <div class="sm:col-span-2 lg:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Project Message</label>
+                        <input type="text" required placeholder="Tell us about your project..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-xs text-slate-100 dark:text-slate-100 light:text-slate-900 focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                    <div class="sm:col-span-2 lg:col-span-3 flex justify-end">
+                        <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-purple-600/30 transition-all flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>Send Message</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs text-slate-400">
+                    <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Encrypted Direct Transmission</span>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="hover:text-purple-400 transition-colors">GitHub</a>
+                        <a href="#" class="hover:text-purple-400 transition-colors">X / Twitter</a>
+                        <a href="#" class="hover:text-purple-400 transition-colors">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer Info -->
+        <footer class="mt-12 pt-6 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+            <div>© 2026 AURA Bento Systems. Built with Tailwind CSS, Lucide & Canvas.</div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>All Systems Operational</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Interactive Card Detail Modal -->
+    <div id="card-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bento-card max-w-lg w-full p-6 sm:p-8 relative transform scale-95 transition-transform duration-300 border-purple-500/40">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-100 font-sans">Modal Title</h3>
+                <button onclick="closeCardModal()" class="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <p id="modal-body" class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                Modal detailed description content goes here.
+            </p>
+            <button onclick="closeCardModal()" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg transition-all">
+                Close View
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Theme Switcher Logic
+        let isDark = true;
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                html.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'sun');
+                isDark = false;
+                showToast('Light theme enabled');
+            } else {
+                html.classList.add('dark');
+                icon.setAttribute('data-lucide', 'moon');
+                isDark = true;
+                showToast('Dark theme enabled');
+            }
+            lucide.createIcons();
+            drawAnalyticsChart();
+        }
+
+        // 2. Dynamic Greeting & Real-time Clock
+        function updateClockAndGreeting() {
+            const now = new Date();
+            const hours = now.getHours();
+            
+            // Dynamic Greeting
+            let greeting = 'Good Evening';
+            if (hours < 12) greeting = 'Good Morning';
+            else if (hours < 18) greeting = 'Good Afternoon';
+            document.getElementById('dynamic-greeting').textContent = greeting;
+
+            // Clock Display
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+            
+            document.getElementById('bento-clock').textContent = timeStr;
+            document.getElementById('bento-date').textContent = dateStr;
+        }
+        setInterval(updateClockAndGreeting, 1000);
+        updateClockAndGreeting();
+
+        // 3. Bento Card Mouse Spotlight Hover Effect
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // 4. Analytics Interactive Canvas Line Chart
+        const canvas = document.getElementById('analytics-canvas');
+        const ctx = canvas.getContext('2d');
+
+        const metricsData = {
+            views: [12, 28, 22, 45, 38, 62, 58, 85, 72, 94, 88, 110],
+            revenue: [1500, 2300, 3100, 2800, 4200, 5600, 6100, 7400, 8900, 9200, 10500, 12800],
+            conversion: [1.8, 2.2, 2.5, 3.1, 2.9, 3.8, 4.2, 4.0, 4.8, 5.1, 5.6, 6.2]
+        };
+
+        let currentMetric = 'views';
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            drawAnalyticsChart();
+        }
+
+        function switchMetric(metric) {
+            currentMetric = metric;
+            document.querySelectorAll('#metric-views, #metric-revenue, #metric-conversion').forEach(btn => {
+                btn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all";
+            });
+            document.getElementById(`metric-${metric}`).className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-600 text-white transition-all";
+            
+            const titles = { views: 'Total Page Impressions', revenue: 'Monthly Revenue ($ USD)', conversion: 'User Conversion Rate (%)' };
+            document.getElementById('analytics-metric-title').textContent = titles[metric];
+
+            drawAnalyticsChart();
+            showToast(`Switched metric to ${metric}`);
+        }
+
+        function drawAnalyticsChart() {
+            if (!canvas.width || !canvas.height) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const data = metricsData[currentMetric];
+            const maxVal = Math.max(...data) * 1.15;
+            const w = canvas.width;
+            const h = canvas.height;
+            const stepX = w / (data.length - 1);
+
+            // Gradient Fill under curve
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, 'rgba(168, 85, 247, 0.35)');
+            grad.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+            ctx.beginPath();
+            data.forEach((val, i) => {
+                const x = i * stepX;
+                const y = h - (val / maxVal) * h;
+                if (i === 0) ctx.moveTo(x, y);
+                else {
+                    const prevX = (i - 1) * stepX;
+                    const prevY = h - (data[i - 1] / maxVal) * h;
+                    const cpX1 = prevX + stepX / 2;
+                    const cpY1 = prevY;
+                    const cpX2 = prevX + stepX / 2;
+                    const cpY2 = y;
+                    ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, x, y);
+                }
+            });
+
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Line Stroke
+            ctx.beginPath();
+            data.forEach((val, i) => {
+                const x = i * stepX;
+                const y = h - (val / maxVal) * h;
+                if (i === 0) ctx.moveTo(x, y);
+                else {
+                    const prevX = (i - 1) * stepX;
+                    const prevY = h - (data[i - 1] / maxVal) * h;
+                    const cpX1 = prevX + stepX / 2;
+                    const cpY1 = prevY;
+                    const cpX2 = prevX + stepX / 2;
+                    const cpY2 = y;
+                    ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, x, y);
+                }
+            });
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100);
+
+        // 5. Web Audio API Synthesizer
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let audioInterval = null;
+
+        const tracks = [
+            { title: "Neon Horizon", artist: "Synthesized Synthwave", freq: 440 },
+            { title: "Cyberpulse", artist: "Ambient Chill", freq: 523.25 },
+            { title: "Starlight Echo", artist: "Lo-Fi Drone", freq: 659.25 }
+        ];
+        let currentTrackIdx = 0;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSynthBeep(freq) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.4);
+            } catch (e) {
+                console.log("Audio play context error");
+            }
+        }
+
+        function toggleAudioSynthesis() {
+            const btnText = document.getElementById('audio-play-text');
+            const icon = document.getElementById('audio-play-icon');
+
+            if (!isAudioPlaying) {
+                isAudioPlaying = true;
+                btnText.textContent = "Stop Audio";
+                icon.setAttribute('data-lucide', 'square');
+                showToast("Synthesizing Web Audio tone...");
+
+                const freqs = [tracks[currentTrackIdx].freq, tracks[currentTrackIdx].freq * 1.25, tracks[currentTrackIdx].freq * 1.5];
+                let step = 0;
+                audioInterval = setInterval(() => {
+                    playSynthBeep(freqs[step % freqs.length]);
+                    step++;
+                }, 350);
+            } else {
+                isAudioPlaying = false;
+                btnText.textContent = "Synthesize Sound";
+                icon.setAttribute('data-lucide', 'play');
+                clearInterval(audioInterval);
+                showToast("Audio stopped");
+            }
+            lucide.createIcons();
+        }
+
+        function changeTrack(direction) {
+            currentTrackIdx = (currentTrackIdx + direction + tracks.length) % tracks.length;
+            document.getElementById('track-title').textContent = tracks[currentTrackIdx].title;
+            document.getElementById('track-artist').textContent = tracks[currentTrackIdx].artist;
+            if (isAudioPlaying) {
+                toggleAudioSynthesis();
+                toggleAudioSynthesis();
+            }
+            showToast(`Track changed to ${tracks[currentTrackIdx].title}`);
+        }
+
+        // 6. Task Tracker / To-Do Manager Logic
+        function updateTaskProgress() {
+            const checkboxes = document.querySelectorAll('#task-list input[type="checkbox"]');
+            const total = checkboxes.length;
+            let checkedCount = 0;
+
+            checkboxes.forEach(cb => {
+                const labelText = cb.nextElementSibling;
+                if (cb.checked) {
+                    checkedCount++;
+                    labelText.classList.add('line-through', 'text-slate-500');
+                    labelText.classList.remove('text-slate-200', 'dark:text-slate-200', 'light:text-slate-800');
+                } else {
+                    labelText.classList.remove('line-through', 'text-slate-500');
+                    labelText.classList.add('text-slate-200', 'dark:text-slate-200', 'light:text-slate-800');
+                }
+            });
+
+            const percent = total === 0 ? 0 : (checkedCount / total) * 100;
+            document.getElementById('task-progress-bar').style.width = `${percent}%`;
+            document.getElementById('task-progress-text').textContent = `${checkedCount} / ${total} Completed`;
+        }
+
+        function addNewTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('new-task-input');
+            const val = input.value.trim();
+            if (!val) return;
+
+            const list = document.getElementById('task-list');
+            const newTaskHTML = `
+                <div class="task-item flex items-center justify-between p-2.5 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-100 border border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 text-xs">
+                    <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+                        <input type="checkbox" onchange="updateTaskProgress()" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                        <span class="text-slate-200 dark:text-slate-200 light:text-slate-800">${val}</span>
+                    </label>
+                    <span class="text-[10px] text-purple-400 font-mono">New</span>
+                </div>
+            `;
+            list.insertAdjacentHTML('beforeend', newTaskHTML);
+            input.value = '';
+            updateTaskProgress();
+            showToast("New milestone added!");
+        }
+
+        // 7. Bento Grid Filtering
+        function filterBentoCards(category) {
+            document.querySelectorAll('.bento-filter-btn').forEach(btn => {
+                btn.className = "bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all";
+            });
+            document.getElementById(`filter-${category}`).className = "bento-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-600 text-white shadow-md transition-all";
+
+            const cards = document.querySelectorAll('.bento-item');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            showToast(`Filtering by ${category}`);
+        }
+
+        // 8. Contact Form Handling
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showToast("Message sent successfully! We'll reply shortly.");
+            e.target.reset();
+        }
+
+        // 9. Toast Notification System
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "pointer-events-auto px-4 py-2.5 rounded-2xl bg-slate-900/90 dark:bg-slate-900/90 light:bg-white text-slate-100 dark:text-slate-100 light:text-slate-900 text-xs font-semibold border border-purple-500/40 shadow-2xl flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300";
+            toast.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-purple-400"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 10. Modal Dialog Mechanics
+        function openCardModal(title, body) {
+            const modal = document.getElementById('card-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').textContent = body;
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.firstElementChild.classList.remove('scale-95');
+            modal.firstElementChild.classList.add('scale-100');
+        }
+
+        function closeCardModal() {
+            const modal = document.getElementById('card-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.firstElementChild.classList.remove('scale-100');
+            modal.firstElementChild.classList.add('scale-95');
+        }
+    </script>
+</body>
+</html>

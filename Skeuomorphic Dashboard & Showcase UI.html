@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeuomorphic Dashboard & Showcase</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=VT323&display=swap');
+
+        :root {
+            --bg-base: #e0e5ec;
+            --panel-bg: linear-gradient(145deg, #ffffff, #dcdfe6);
+            --panel-border: rgba(255, 255, 255, 0.8);
+            --text-color: #334155;
+            --text-emboss: rgba(255, 255, 255, 0.9);
+            --shadow-outer: 9px 9px 18px #bebebe, -9px -9px 18px #ffffff;
+            --shadow-inset: inset 3px 3px 6px #b8b9be, inset -3px -3px 6px #ffffff;
+            --button-grad: linear-gradient(145deg, #f0f3f8, #d3d9e3);
+            --accent-glow: #3b82f6;
+        }
+
+        /* Material Themes */
+        [data-theme="aluminum"] {
+            --bg-base: #d1d5db;
+            --panel-bg: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 50%, #9ca3af 100%);
+            --panel-border: rgba(255, 255, 255, 0.9);
+            --text-color: #1f2937;
+            --text-emboss: rgba(255, 255, 255, 0.8);
+            --shadow-outer: 8px 8px 16px #a3a8b0, -8px -8px 16px #ffffff;
+            --shadow-inset: inset 3px 3px 6px #9ca3af, inset -3px -3px 6px #ffffff;
+            --button-grad: linear-gradient(180deg, #ffffff 0%, #e5e7eb 50%, #d1d5db 100%);
+            --accent-glow: #2563eb;
+        }
+
+        [data-theme="leather"] {
+            --bg-base: #2a2118;
+            --panel-bg: radial-gradient(circle at 50% 50%, #3a2e22 0%, #231b13 100%);
+            --panel-border: #4a3b2c;
+            --text-color: #e2d1c3;
+            --text-emboss: rgba(0, 0, 0, 0.9);
+            --shadow-outer: 10px 10px 20px #17120c, -6px -6px 15px #3d3024;
+            --shadow-inset: inset 4px 4px 8px #140f0a, inset -2px -2px 6px #4d3e30;
+            --button-grad: linear-gradient(180deg, #524131 0%, #362a1f 100%);
+            --accent-glow: #f59e0b;
+        }
+
+        [data-theme="cream"] {
+            --bg-base: #f4efe6;
+            --panel-bg: linear-gradient(145deg, #fffbf4, #e8dfd1);
+            --panel-border: #ffffff;
+            --text-color: #5c4d3c;
+            --text-emboss: rgba(255, 255, 255, 1);
+            --shadow-outer: 8px 8px 18px #d6cbba, -8px -8px 18px #ffffff;
+            --shadow-inset: inset 3px 3px 6px #cfc2af, inset -3px -3px 6px #ffffff;
+            --button-grad: linear-gradient(180deg, #fffdf9 0%, #ece2d3 100%);
+            --accent-glow: #ea580c;
+        }
+
+        [data-theme="glass"] {
+            --bg-base: #0f172a;
+            --panel-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+            --panel-border: rgba(255, 255, 255, 0.2);
+            --text-color: #f1f5f9;
+            --text-emboss: rgba(0, 0, 0, 0.8);
+            --shadow-outer: 10px 10px 30px rgba(0, 0, 0, 0.5), -5px -5px 20px rgba(255, 255, 255, 0.05);
+            --shadow-inset: inset 2px 2px 5px rgba(255, 255, 255, 0.15), inset -2px -2px 5px rgba(0, 0, 0, 0.5);
+            --button-grad: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            --accent-glow: #06b6d4;
+        }
+
+        [data-theme="soft"] {
+            --bg-base: #e6ebf1;
+            --panel-bg: #e6ebf1;
+            --panel-border: rgba(255, 255, 255, 0.6);
+            --text-color: #475569;
+            --text-emboss: rgba(255, 255, 255, 0.8);
+            --shadow-outer: 10px 10px 20px #c2c7cd, -10px -10px 20px #ffffff;
+            --shadow-inset: inset 5px 5px 10px #c2c7cd, inset -5px -5px 10px #ffffff;
+            --button-grad: linear-gradient(145deg, #f6fbff, #cfd4d9);
+            --accent-glow: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            user-select: none;
+        }
+
+        .sk-panel {
+            background: var(--panel-bg);
+            box-shadow: var(--shadow-outer);
+            border: 1px solid var(--panel-border);
+            border-radius: 1.5rem;
+            position: relative;
+        }
+
+        [data-theme="leather"] .sk-panel {
+            border: 2px dashed #4a3b2c;
+            outline: 1px solid #1a130c;
+        }
+
+        .sk-inset {
+            box-shadow: var(--shadow-inset);
+            border-radius: 1rem;
+        }
+
+        .sk-button {
+            background: var(--button-grad);
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15), -3px -3px 6px rgba(255, 255, 255, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.1s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            padding: 0.625rem 1rem;
+            min-height: 2.75rem;
+            border-radius: 0.875rem;
+            font-weight: 600;
+        }
+
+        .sk-button:hover {
+            filter: brightness(1.03);
+            transform: translateY(-1px);
+        }
+
+        .sk-button:active, .sk-button.active {
+            box-shadow: var(--shadow-inset);
+            transform: translateY(1px);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .sk-button.active {
+            background: var(--button-grad);
+            color: var(--accent-glow);
+            border: 1px solid var(--accent-glow);
+        }
+
+        /* Header Surface Picker Container */
+        .theme-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.5rem;
+            border-radius: 1.25rem;
+            box-shadow: var(--shadow-inset);
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+            .theme-picker-container {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .theme-picker-btn {
+            flex: 1 1 auto;
+            min-width: 6.5rem;
+            font-size: 0.8125rem;
+            letter-spacing: 0.01em;
+            padding: 0.5rem 0.875rem;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .sk-emboss-text {
+            text-shadow: 0px 1px 0px var(--text-emboss);
+        }
+
+        .knob-container {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: var(--panel-bg);
+            box-shadow: var(--shadow-outer);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            touch-action: none;
+        }
+
+        .knob-dial {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #e6e6e6, #ffffff, #b8b8b8, #e6e6e6);
+            box-shadow: 3px 5px 10px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.4);
+            position: relative;
+            cursor: grab;
+            transition: transform 0.05s ease-out;
+        }
+
+        .knob-dial:active {
+            cursor: grabbing;
+        }
+
+        .knob-indicator {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 18px;
+            background: var(--accent-glow);
+            border-radius: 3px;
+            box-shadow: 0 0 5px var(--accent-glow);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 60px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 30px;
+            box-shadow: var(--shadow-inset);
+            position: relative;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-lever {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.3), inset 0 2px 2px rgba(255,255,255,1);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .toggle-switch.on .toggle-lever {
+            transform: translateY(40px);
+            background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%);
+        }
+
+        .toggle-switch.on {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        /* LED Indicator Light */
+        .led-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #475569;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.8);
+            transition: all 0.2s ease;
+        }
+
+        .led-light.active-green {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981, inset 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .led-light.active-red {
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444, inset 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        /* Skeuomorphic LCD Screen */
+        .lcd-display {
+            background: #9ea98f;
+            color: #1a2e05;
+            font-family: 'VT323', monospace;
+            box-shadow: inset 3px 3px 8px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.3);
+            border: 4px solid #334155;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.3);
+        }
+
+        /* Flip Clock Segment */
+        .flip-card {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            position: relative;
+        }
+        .flip-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Chrome Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4), inset -1px -1px 2px rgba(255,255,255,0.2);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px;
+            width: 18px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #ffffff 0%, #94a3b8 50%, #475569 100%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.9);
+            margin-top: -8px;
+            cursor: pointer;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-start">
+
+    <header class="w-full max-w-6xl mb-8">
+        <div class="sk-panel p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 sk-button flex items-center justify-center text-blue-500 rounded-2xl">
+                    <i data-lucide="sliders" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-2xl tracking-tight sk-emboss-text">SKEUO-DASHBOARD</h1>
+                    <p class="text-xs font-medium opacity-75 uppercase tracking-widest">Tactile Hardware Interface Engine</p>
+                </div>
+            </div>
+
+            <div class="theme-picker-container">
+                <span class="text-xs font-bold uppercase px-2 opacity-75 tracking-wider hidden sm:inline">Surface:</span>
+                <button onclick="setTheme('aluminum')" id="btn-aluminum" class="sk-button theme-picker-btn active">Aluminum</button>
+                <button onclick="setTheme('leather')" id="btn-leather" class="sk-button theme-picker-btn">Leather</button>
+                <button onclick="setTheme('cream')" id="btn-cream" class="sk-button theme-picker-btn">Cream Plastic</button>
+                <button onclick="setTheme('glass')" id="btn-glass" class="sk-button theme-picker-btn">Glass & Dark</button>
+                <button onclick="setTheme('soft')" id="btn-soft" class="sk-button theme-picker-btn">Neumorphic</button>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+        <!-- Module 1: Analog Audio Deck -->
+        <section class="sk-panel p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold tracking-wide sk-emboss-text flex items-center gap-2">
+                    <i data-lucide="radio" class="w-5 h-5 text-blue-500"></i>
+                    ANALOG AUDIO DECK
+                </h2>
+                <div id="audio-led" class="led-light"></div>
+            </div>
+
+            <!-- VU Meter -->
+            <div class="sk-inset p-3 mb-6 bg-slate-900/10 flex flex-col items-center">
+                <div class="text-[10px] font-bold tracking-widest opacity-60 mb-1 uppercase">Output Level VU</div>
+                <div class="w-full h-16 bg-amber-100/90 rounded-lg relative overflow-hidden border border-amber-900/30 shadow-inner flex items-end justify-center">
+                    <div class="absolute inset-0 flex justify-between px-4 pt-1 text-[9px] font-mono font-bold text-amber-900/60">
+                        <span>-20</span><span>-10</span><span>-5</span><span>0</span><span>+3</span>
+                    </div>
+                    <!-- Meter Needle -->
+                    <div id="vu-needle" class="w-0.5 h-12 bg-red-600 origin-bottom transition-transform duration-75 ease-out shadow-sm" style="transform: rotate(-40deg);"></div>
+                </div>
+            </div>
+
+            <!-- Rotary Controls -->
+            <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="knob-container mb-2" id="knob-vol">
+                        <div class="knob-dial" id="dial-vol" style="transform: rotate(-120deg);">
+                            <div class="knob-indicator"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-wider opacity-80">Volume</span>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="knob-container mb-2" id="knob-freq">
+                        <div class="knob-dial" id="dial-freq" style="transform: rotate(0deg);">
+                            <div class="knob-indicator"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-wider opacity-80">Frequency</span>
+                </div>
+            </div>
+
+            <!-- Toggle Switch & Controls -->
+            <div class="flex items-center justify-around pt-2 border-t border-black/10">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="toggle-switch" id="audio-power-switch" onclick="toggleAudioPower()">
+                        <div class="toggle-lever"></div>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase mt-1 tracking-wider opacity-70">Power</span>
+                </div>
+                
+                <div class="flex flex-col gap-2">
+                    <button class="sk-button text-xs font-bold" onclick="playSynthesizedTone(440, 'sine')">Test Sine Wave</button>
+                    <button class="sk-button text-xs font-bold" onclick="playSynthesizedTone(880, 'square')">Test Square Wave</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2: Climate & Smart Control -->
+        <section class="sk-panel p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold tracking-wide sk-emboss-text flex items-center gap-2">
+                    <i data-lucide="thermometer" class="w-5 h-5 text-amber-500"></i>
+                    THERMOSTAT HUB
+                </h2>
+                <div class="led-light active-green"></div>
+            </div>
+
+            <!-- Circular Gauge -->
+            <div class="flex justify-center my-4">
+                <div class="w-44 h-44 rounded-full sk-panel flex items-center justify-center p-4 relative shadow-2xl">
+                    <div class="w-full h-full rounded-full sk-inset flex flex-col items-center justify-center text-center p-2">
+                        <span class="text-xs uppercase font-extrabold tracking-widest opacity-60">Target Temp</span>
+                        <span id="temp-display" class="text-4xl font-extrabold my-1 sk-emboss-text">72°F</span>
+                        <span id="temp-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">CLIMATE OPTIMAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slider Bar -->
+            <div class="space-y-2 mb-4 px-2">
+                <div class="flex justify-between text-xs font-bold opacity-80">
+                    <span>60°F</span>
+                    <span>Set Point</span>
+                    <span>85°F</span>
+                </div>
+                <input type="range" id="temp-slider" min="60" max="85" value="72" oninput="updateTemperature(this.value)">
+            </div>
+
+            <!-- Mode Selector Buttons -->
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="setClimateMode('cool')" id="mode-cool" class="sk-button text-xs font-bold active">Cool</button>
+                <button onclick="setClimateMode('heat')" id="mode-heat" class="sk-button text-xs font-bold">Heat</button>
+                <button onclick="setClimateMode('eco')" id="mode-eco" class="sk-button text-xs font-bold">Eco</button>
+            </div>
+        </section>
+
+        <!-- Module 3: Retro Calculator -->
+        <section class="sk-panel p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold tracking-wide sk-emboss-text flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-5 h-5 text-emerald-500"></i>
+                    CALCULATOR
+                </h2>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-1 rounded bg-black/10">SOLAR-POWERED</span>
+            </div>
+
+            <!-- LCD Display Screen -->
+            <div class="lcd-display p-3 rounded-lg mb-4 text-right">
+                <div id="calc-history" class="h-4 text-xs opacity-60 font-mono overflow-hidden"></div>
+                <div id="calc-display" class="text-3xl font-extrabold tracking-wider truncate">0</div>
+            </div>
+
+            <!-- Rubberized Keypad Grid -->
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="calcClear()" class="sk-button text-xs text-red-500 font-extrabold">C</button>
+                <button onclick="calcOp('/')" class="sk-button text-xs font-extrabold">÷</button>
+                <button onclick="calcOp('*')" class="sk-button text-xs font-extrabold">×</button>
+                <button onclick="calcOp('-')" class="sk-button text-xs font-extrabold">-</button>
+
+                <button onclick="calcNum('7')" class="sk-button text-sm font-bold">7</button>
+                <button onclick="calcNum('8')" class="sk-button text-sm font-bold">8</button>
+                <button onclick="calcNum('9')" class="sk-button text-sm font-bold">9</button>
+                <button onclick="calcOp('+')" class="sk-button text-xs font-extrabold">+</button>
+
+                <button onclick="calcNum('4')" class="sk-button text-sm font-bold">4</button>
+                <button onclick="calcNum('5')" class="sk-button text-sm font-bold">5</button>
+                <button onclick="calcNum('6')" class="sk-button text-sm font-bold">6</button>
+                <button onclick="calcEquals()" class="sk-button text-sm font-bold row-span-2 text-blue-500 active">=</button>
+
+                <button onclick="calcNum('1')" class="sk-button text-sm font-bold">1</button>
+                <button onclick="calcNum('2')" class="sk-button text-sm font-bold">2</button>
+                <button onclick="calcNum('3')" class="sk-button text-sm font-bold">3</button>
+
+                <button onclick="calcNum('0')" class="sk-button text-sm font-bold col-span-2">0</button>
+                <button onclick="calcNum('.')" class="sk-button text-sm font-bold">.</button>
+            </div>
+        </section>
+
+        <!-- Module 4: Mechanical Flip Clock & Stopwatch -->
+        <section class="sk-panel p-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold tracking-wide sk-emboss-text flex items-center gap-2">
+                    <i data-lucide="clock" class="w-5 h-5 text-purple-500"></i>
+                    MECHANICAL TIME
+                </h2>
+                <div class="led-light active-green"></div>
+            </div>
+
+            <!-- Flip Display -->
+            <div class="flex justify-center items-center gap-2 my-4">
+                <div class="flip-card px-4 py-3 text-3xl font-mono font-extrabold" id="flip-hours">00</div>
+                <span class="text-2xl font-bold opacity-50">:</span>
+                <div class="flip-card px-4 py-3 text-3xl font-mono font-extrabold" id="flip-minutes">00</div>
+                <span class="text-2xl font-bold opacity-50">:</span>
+                <div class="flip-card px-4 py-3 text-3xl font-mono font-extrabold text-blue-400" id="flip-seconds">00</div>
+            </div>
+
+            <!-- Stopwatch Section -->
+            <div class="sk-inset p-3 bg-black/5 mb-4 text-center">
+                <div class="text-[10px] font-extrabold tracking-widest uppercase opacity-70 mb-1">Precision Stopwatch</div>
+                <div id="stopwatch-display" class="text-2xl font-mono font-bold">00:00.0</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button id="sw-toggle-btn" onclick="toggleStopwatch()" class="sk-button text-xs font-bold">Start</button>
+                <button onclick="resetStopwatch()" class="sk-button text-xs font-bold">Reset</button>
+            </div>
+        </section>
+
+        <!-- Module 5: Equalizer & Sound Mixer -->
+        <section class="sk-panel p-6 flex flex-col justify-between col-span-1 md:col-span-2 lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold tracking-wide sk-emboss-text flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-indigo-500"></i>
+                    TACTILE EQUALIZER & HARDWARE MIXER
+                </h2>
+                <span class="text-xs font-bold uppercase opacity-60 tracking-wider">6-Band Parametric</span>
+            </div>
+
+            <!-- Sliders Row -->
+            <div class="grid grid-cols-6 gap-2 md:gap-4 my-4 p-4 sk-inset bg-black/5">
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">60Hz</span>
+                    <input type="range" min="-12" max="12" value="0" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Bass</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">150Hz</span>
+                    <input type="range" min="-12" max="12" value="3" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Low</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">400Hz</span>
+                    <input type="range" min="-12" max="12" value="-1" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Mid-L</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">1kHz</span>
+                    <input type="range" min="-12" max="12" value="2" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Mid-H</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">2.5kHz</span>
+                    <input type="range" min="-12" max="12" value="5" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Presence</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-extrabold opacity-70">15kHz</span>
+                    <input type="range" min="-12" max="12" value="1" class="h-28 [writing-mode:vertical-lr] [direction:rtl]" oninput="playTickSound()">
+                    <span class="text-[10px] font-bold opacity-60">Treble</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex gap-2">
+                    <button class="sk-button text-xs font-bold" onclick="resetEQ()">Flat EQ</button>
+                    <button class="sk-button text-xs font-bold" onclick="presetBassBoost()">Bass Boost</button>
+                </div>
+                <span class="text-xs font-mono opacity-60">Hardware Gain: +2.4 dB</span>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Audio Context initialization for procedural SFX
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playClickSound() {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.03);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.03);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.03);
+            } catch (e) {}
+        }
+
+        function playTickSound() {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.015);
+            } catch(e) {}
+        }
+
+        function playSynthesizedTone(freq, type) {
+            playClickSound();
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+                
+                // Animate VU meter needle
+                triggerVUMeter();
+            } catch(e) {}
+        }
+
+        // --- Theme Switcher ---
+        function setTheme(themeName) {
+            playClickSound();
+            document.body.setAttribute('data-theme', themeName);
+            
+            // Highlight active button
+            const themeBtns = ['aluminum', 'leather', 'cream', 'glass', 'soft'];
+            themeBtns.forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (btn) {
+                    if (t === themeName) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // --- Audio Deck Power Switch ---
+        let audioPower = false;
+        function toggleAudioPower() {
+            playClickSound();
+            audioPower = !audioPower;
+            const sw = document.getElementById('audio-power-switch');
+            const led = document.getElementById('audio-led');
+            if (audioPower) {
+                sw.classList.add('on');
+                led.className = 'led-light active-green';
+                triggerVUMeter();
+            } else {
+                sw.classList.remove('on');
+                led.className = 'led-light';
+                document.getElementById('vu-needle').style.transform = 'rotate(-40deg)';
+            }
+        }
+
+        function triggerVUMeter() {
+            if (!audioPower) return;
+            const needle = document.getElementById('vu-needle');
+            const randomAngle = Math.floor(Math.random() * 60) - 20; // -20 to 40 degrees
+            needle.style.transform = `rotate(${randomAngle}deg)`;
+            setTimeout(() => {
+                if (audioPower) needle.style.transform = 'rotate(-30deg)';
+            }, 200);
+        }
+
+        // --- Rotary Knobs logic ---
+        function setupKnob(knobId, dialId) {
+            const dial = document.getElementById(dialId);
+            let isDragging = false;
+            let currentRotation = 0;
+
+            dial.addEventListener('mousedown', () => { isDragging = true; });
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                currentRotation += e.movementX * 2;
+                if (currentRotation < -140) currentRotation = -140;
+                if (currentRotation > 140) currentRotation = 140;
+                dial.style.transform = `rotate(${currentRotation}deg)`;
+                playTickSound();
+                triggerVUMeter();
+            });
+        }
+        setupKnob('knob-vol', 'dial-vol');
+        setupKnob('knob-freq', 'dial-freq');
+
+        // --- Thermostat Logic ---
+        function updateTemperature(val) {
+            playTickSound();
+            document.getElementById('temp-display').innerText = `${val}°F`;
+        }
+
+        function setClimateMode(mode) {
+            playClickSound();
+            ['cool', 'heat', 'eco'].forEach(m => {
+                document.getElementById(`mode-${m}`).classList.remove('active');
+            });
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            
+            const status = document.getElementById('temp-status');
+            if(mode === 'cool') {
+                status.innerText = 'COOLING ACTIVE';
+                status.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-600';
+            } else if(mode === 'heat') {
+                status.innerText = 'HEATING ACTIVE';
+                status.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600';
+            } else {
+                status.innerText = 'ECO MODE';
+                status.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600';
+            }
+        }
+
+        // --- Calculator Logic ---
+        let calcVal = '0';
+        let calcOpPrev = null;
+        let calcHist = '';
+
+        function updateCalcDisplay() {
+            document.getElementById('calc-display').innerText = calcVal;
+            document.getElementById('calc-history').innerText = calcHist;
+        }
+
+        function calcNum(num) {
+            playClickSound();
+            if (calcVal === '0') {
+                calcVal = num;
+            } else {
+                calcVal += num;
+            }
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            playClickSound();
+            calcVal = '0';
+            calcOpPrev = null;
+            calcHist = '';
+            updateCalcDisplay();
+        }
+
+        function calcOp(op) {
+            playClickSound();
+            calcHist = `${calcVal} ${op}`;
+            calcOpPrev = op;
+            calcVal = '0';
+            updateCalcDisplay();
+        }
+
+        function calcEquals() {
+            playClickSound();
+            if (!calcOpPrev) return;
+            try {
+                const expr = `${calcHist} ${calcVal}`.replace('×', '*').replace('÷', '/');
+                const result = eval(expr);
+                calcHist = `${calcHist} ${calcVal} =`;
+                calcVal = String(result);
+                calcOpPrev = null;
+                updateCalcDisplay();
+            } catch(e) {
+                calcVal = 'Error';
+                updateCalcDisplay();
+            }
+        }
+
+        // --- Flip Clock Logic ---
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+
+            document.getElementById('flip-hours').innerText = h;
+            document.getElementById('flip-minutes').innerText = m;
+            document.getElementById('flip-seconds').innerText = s;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- Stopwatch Logic ---
+        let swInterval = null;
+        let swTime = 0;
+
+        function toggleStopwatch() {
+            playClickSound();
+            const btn = document.getElementById('sw-toggle-btn');
+            if (swInterval) {
+                clearInterval(swInterval);
+                swInterval = null;
+                btn.innerText = 'Start';
+            } else {
+                btn.innerText = 'Pause';
+                swInterval = setInterval(() => {
+                    swTime += 100;
+                    const totalSecs = Math.floor(swTime / 1000);
+                    const mins = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+                    const secs = String(totalSecs % 60).padStart(2, '0');
+                    const ms = Math.floor((swTime % 1000) / 100);
+                    document.getElementById('stopwatch-display').innerText = `${mins}:${secs}.${ms}`;
+                }, 100);
+            }
+        }
+
+        function resetStopwatch() {
+            playClickSound();
+            if (swInterval) {
+                clearInterval(swInterval);
+                swInterval = null;
+            }
+            swTime = 0;
+            document.getElementById('sw-toggle-btn').innerText = 'Start';
+            document.getElementById('stopwatch-display').innerText = '00:00.0';
+        }
+
+        // --- EQ Logic ---
+        function resetEQ() {
+            playClickSound();
+            const inputs = document.querySelectorAll('section input[type=range]');
+            inputs.forEach(i => i.value = 0);
+        }
+
+        function presetBassBoost() {
+            playClickSound();
+            const inputs = document.querySelectorAll('section input[type=range]');
+            if(inputs.length >= 6) {
+                inputs[0].value = 10;
+                inputs[1].value = 6;
+                inputs[2].value = 2;
+                inputs[3].value = 0;
+                inputs[4].value = 1;
+                inputs[5].value = 3;
+            }
+        }
+    </script>
+</body>
+</html>
