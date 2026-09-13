@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Dual-View: Cosmic & Cyberpunk Odyssey</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Courier New', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-color: #030712;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel-cosmic {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-panel-cyber {
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(236, 72, 153, 0.35);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.2);
+        }
+
+        /* Glowing text effects */
+        .glow-text-cosmic {
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.6), 0 0 40px rgba(56, 189, 248, 0.3);
+        }
+
+        .glow-text-cyber {
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.7), 0 0 40px rgba(34, 211, 238, 0.5);
+        }
+
+        /* Canvas background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(1.5deg); }
+        }
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.85; }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen selection:bg-cyan-500 selection:text-white">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation / Dual View Hub -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto backdrop-blur-md bg-opacity-40 bg-black/50 border-b border-white/10 rounded-b-2xl mt-2 mx-4 sm:mx-auto">
+        <div class="flex items-center space-x-3">
+            <div id="nav-logo-icon" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 transition-all duration-500">
+                <i class="fa-solid fa-layer-group text-lg"></i>
+            </div>
+            <div>
+                <span class="font-bold text-lg tracking-wider bg-gradient-to-r from-cyan-400 via-blue-500 to-pink-500 bg-clip-text text-transparent">DUAL REALITY</span>
+                <span class="block text-xs text-slate-400 tracking-widest font-mono">SINGLE PAGE v3.0</span>
+            </div>
+        </div>
+
+        <!-- Section Jump Switcher -->
+        <div class="flex items-center bg-slate-900/90 p-1.5 rounded-full border border-white/10 shadow-inner">
+            <a href="#section-cosmic" onclick="setActiveTheme('cosmic')" id="tab-cosmic" class="px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/40">
+                <i class="fa-solid fa-meteor"></i>
+                <span class="hidden sm:inline">Cosmic</span>
+            </a>
+            <a href="#section-cyber" onclick="setActiveTheme('cyber')" id="tab-cyber" class="px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-microchip"></i>
+                <span class="hidden sm:inline">Cyberpunk</span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-4">
+            <button onclick="triggerNotification('Live system bridge fully operational.')" class="px-4 py-2 text-xs font-medium rounded-xl bg-white/5 border border-white/10 hover:bg-white/15 transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-globe text-cyan-400"></i>
+                <span>Bridge: Online</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-8 space-y-36">
+
+        <!-- ================= SECTION 1: COSMIC ODYSSEY ================= -->
+        <section id="section-cosmic" class="min-h-screen flex flex-col justify-center pt-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        <span>SECTOR 7-G • UNCHARTED NEBULA</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+                        Explore The Infinite <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 bg-clip-text text-transparent glow-text-cosmic">Cosmic Odyssey</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg max-w-xl leading-relaxed">
+                        Embark on a celestial voyage across distant galaxies, luminous star clusters, and black hole event horizons. Experience space exploration redefined through immersive telemetry.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="scrollToElement('cosmic-widgets')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold hover:brightness-110 shadow-lg shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 flex items-center space-x-3">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>Launch Telemetry</span>
+                        </button>
+                        <button onclick="triggerNotification('Cosmic warp coordinates verified.')" class="px-8 py-3.5 rounded-2xl bg-white/5 border border-cyan-500/30 text-cyan-300 font-semibold hover:bg-cyan-500/10 transition-all flex items-center space-x-3">
+                            <i class="fa-solid fa-atom"></i>
+                            <span>Diagnostics</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cosmic Orb Widget -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96 rounded-3xl glass-panel-cosmic p-6 flex flex-col items-center justify-center animate-float">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent rounded-3xl animate-pulse-glow"></div>
+                        <div class="relative z-10 w-36 h-36 rounded-full bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 flex items-center justify-center shadow-2xl shadow-cyan-500/50 mb-6">
+                            <i class="fa-solid fa-globe text-6xl text-slate-950 animate-spin" style="animation-duration: 25s;"></i>
+                        </div>
+                        <div class="text-center relative z-10">
+                            <h3 class="font-bold text-xl text-cyan-300">Planet Kepler-452b</h3>
+                            <p class="text-xs text-slate-400 mt-1 font-mono">Distance: 1,402 Light Years</p>
+                            <div class="mt-4 inline-flex items-center space-x-3 bg-slate-900/60 px-4 py-2 rounded-xl border border-cyan-500/20 text-xs">
+                                <span class="text-cyan-400 font-mono">Atmosphere: O₂ Rich</span>
+                                <span class="text-slate-500">|</span>
+                                <span class="text-green-400 font-mono">Habitable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cosmic Widgets Deck -->
+            <div id="cosmic-widgets" class="mt-16">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">Stellar Navigation Hub</h2>
+                    <p class="text-slate-400 text-sm mt-2">Real-time telemetry and module control for deep space exploration.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Widget 1: Shield Power -->
+                    <div class="glass-panel-cosmic rounded-3xl p-6 relative overflow-hidden group hover:border-cyan-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                                <i class="fa-solid fa-shield-halved text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full">ACTIVE</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">Deflector Shields</h3>
+                        <p class="text-xs text-slate-400 mt-1">Absorbs high-energy cosmic rays and micrometeorite debris.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Capacity</span>
+                                <span id="cosmic-shield-val" class="text-cyan-300 font-bold">98%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="cosmic-shield-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-[98%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="boostShields()" class="mt-6 w-full py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 font-semibold text-xs transition-all">
+                            Calibrate Frequency
+                        </button>
+                    </div>
+
+                    <!-- Widget 2: Ion Propulsion -->
+                    <div class="glass-panel-cosmic rounded-3xl p-6 relative overflow-hidden group hover:border-cyan-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                                <i class="fa-solid fa-gauge-high text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">WARP 9.4</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">Ion Propulsion</h3>
+                        <p class="text-xs text-slate-400 mt-1">Maintains faster-than-light trajectories through quantum conduits.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Core Temp</span>
+                                <span class="text-blue-300 font-bold">3,420 K</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full w-[76%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="triggerNotification('Ion propulsion stable. Thrust vector locked.')" class="mt-6 w-full py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-300 font-semibold text-xs transition-all">
+                            Run Diagnostics
+                        </button>
+                    </div>
+
+                    <!-- Widget 3: Anomaly Radar -->
+                    <div class="glass-panel-cosmic rounded-3xl p-6 relative overflow-hidden group hover:border-cyan-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                                <i class="fa-solid fa-satellite-dish text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full">SCANNING</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">Anomaly Radar</h3>
+                        <p class="text-xs text-slate-400 mt-1">Detects gravitational waves, dark matter pockets, and alien signals.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Range</span>
+                                <span class="text-indigo-300 font-bold">50 Parsecs</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-[88%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="triggerNotification('Radar scan complete. No hostile signatures found.')" class="mt-6 w-full py-2.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-semibold text-xs transition-all">
+                            Initiate Sector Scan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Divider Bridge Indicator -->
+        <div class="flex items-center justify-center py-6">
+            <div class="h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent w-full max-w-md"></div>
+            <div class="mx-4 px-4 py-1.5 rounded-full bg-slate-900 border border-white/10 text-xs font-mono text-slate-400 flex items-center space-x-2">
+                <i class="fa-solid fa-arrows-rotate text-cyan-400 animate-spin"></i>
+                <span>QUANTUM BRIDGE ACTIVE</span>
+            </div>
+            <div class="h-px bg-gradient-to-r from-transparent via-pink-500/40 to-transparent w-full max-w-md"></div>
+        </div>
+
+        <!-- ================= SECTION 2: NEO CYBERPUNK ================= -->
+        <section id="section-cyber" class="min-h-screen flex flex-col justify-center pt-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-mono">
+                        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+                        <span>DISTRICT 9 • NET-RUNNER ZONE</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+                        Welcome To The Grid <span class="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent glow-text-cyber">Neo Cyberpunk</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg max-w-xl leading-relaxed">
+                        Plug directly into the underground neural net where neon lights pierce endless acid rain. Master high-speed hacking, syndicate tracking, and high-stakes cybernetic augmentations.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="scrollToElement('cyber-widgets')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold hover:brightness-110 shadow-lg shadow-pink-500/25 transition-all transform hover:-translate-y-0.5 flex items-center space-x-3">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>Access Terminal</span>
+                        </button>
+                        <button onclick="triggerNotification('Neural link established. Encryption active.')" class="px-8 py-3.5 rounded-2xl bg-white/5 border border-pink-500/30 text-pink-300 font-semibold hover:bg-pink-500/10 transition-all flex items-center space-x-3">
+                            <i class="fa-solid fa-shield-dog"></i>
+                            <span>Firewall Status</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cyber Core Widget -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96 rounded-3xl glass-panel-cyber p-6 flex flex-col items-center justify-center animate-float">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-pink-500/15 to-transparent rounded-3xl animate-pulse-glow"></div>
+                        <div class="relative z-10 w-36 h-36 rounded-2xl bg-gradient-to-tr from-pink-600 via-purple-600 to-cyan-500 flex items-center justify-center shadow-2xl shadow-pink-500/50 mb-6 border border-pink-400/40">
+                            <i class="fa-solid fa-skull text-6xl text-white animate-bounce" style="animation-duration: 3s;"></i>
+                        </div>
+                        <div class="text-center relative z-10">
+                            <h3 class="font-bold text-xl text-pink-400 font-mono tracking-wider">CYBER_CORE // 8.04</h3>
+                            <p class="text-xs text-slate-400 mt-1 font-mono">Baud Rate: 104.5 TB/s</p>
+                            <div class="mt-4 inline-flex items-center space-x-3 bg-black/60 px-4 py-2 rounded-xl border border-pink-500/20 text-xs">
+                                <span class="text-pink-400 font-mono">Neural Load: 42%</span>
+                                <span class="text-slate-500">|</span>
+                                <span class="text-cyan-400 font-mono">Secure</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cyber Widgets Deck -->
+            <div id="cyber-widgets" class="mt-16">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent font-mono">NET-RUNNER CONTROL DECK</h2>
+                    <p class="text-slate-400 text-sm mt-2">Manage neural overclocks, proxy bypass protocols, and corporate mainframes.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Widget 1: Synapse Booster -->
+                    <div class="glass-panel-cyber rounded-3xl p-6 relative overflow-hidden group hover:border-pink-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400">
+                                <i class="fa-solid fa-bolt text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-pink-400 bg-pink-500/10 px-2.5 py-1 rounded-full">OVERCLOCKED</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">Synapse Booster</h3>
+                        <p class="text-xs text-slate-400 mt-1">Accelerates reflex speed and data parsing for real-time tactical combat.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Clock Speed</span>
+                                <span id="cyber-clock-val" class="text-pink-300 font-bold">4.8 GHz</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                <div id="cyber-clock-bar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-full w-[85%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="boostCyberClock()" class="mt-6 w-full py-2.5 rounded-xl bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-pink-300 font-semibold text-xs transition-all">
+                            Overclock Synapse
+                        </button>
+                    </div>
+
+                    <!-- Widget 2: Ghost Proxy Stack -->
+                    <div class="glass-panel-cyber rounded-3xl p-6 relative overflow-hidden group hover:border-pink-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                                <i class="fa-solid fa-network-wired text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full">12 NODES</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">Ghost Proxy Stack</h3>
+                        <p class="text-xs text-slate-400 mt-1">Masks IP footprints across subterranean darknet relay servers.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Anonymity</span>
+                                <span class="text-purple-300 font-bold">99.9%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-purple-500 to-cyan-500 h-full w-[99%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="triggerNotification('Proxy stack rotated. Trace lost.')" class="mt-6 w-full py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 font-semibold text-xs transition-all">
+                            Rotate Proxies
+                        </button>
+                    </div>
+
+                    <!-- Widget 3: ICE-Breaker Suite -->
+                    <div class="glass-panel-cyber rounded-3xl p-6 relative overflow-hidden group hover:border-pink-400/50 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                                <i class="fa-solid fa-bug text-xl"></i>
+                            </div>
+                            <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full">READY</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">ICE-Breaker Suite</h3>
+                        <p class="text-xs text-slate-400 mt-1">Automated penetration payload designed to crack corporate mainframes.</p>
+                        <div class="mt-6 space-y-2">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="text-slate-400">Success Rate</span>
+                                <span class="text-cyan-300 font-bold">94.2%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-cyan-500 to-pink-500 h-full w-[94%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <button onclick="triggerNotification('ICE-Breaker payload dispatched to Arasaka Node #4.')" class="mt-6 w-full py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 font-semibold text-xs transition-all">
+                            Deploy Exploit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast Element -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-32 opacity-0 transition-all duration-300 pointer-events-none">
+        <div id="toast-box" class="glass-panel-cosmic px-5 py-3.5 rounded-2xl flex items-center space-x-3 shadow-2xl border border-cyan-500/40">
+            <i id="toast-icon" class="fa-solid fa-circle-info text-cyan-400 text-lg"></i>
+            <div>
+                <h4 id="toast-title" class="font-bold text-xs text-cyan-300 uppercase tracking-wider font-mono">System Telemetry</h4>
+                <p id="toast-msg" class="text-xs text-slate-200 mt-0.5">Notification message goes here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let currentTheme = 'cosmic';
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.7 + 0.3;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                if (currentTheme === 'cosmic') {
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#38bdf8';
+                } else {
+                    ctx.fillStyle = Math.random() > 0.5 ? '#ec4899' : '#22d3ee';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#ec4899';
+                }
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.floor((width * height) / 14000);
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 110) {
+                        ctx.save();
+                        ctx.globalAlpha = (1 - (dist / 110)) * 0.18;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = currentTheme === 'cosmic' ? '#38bdf8' : '#ec4899';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        requestAnimationFrame(animateCanvas);
+
+        // Update active theme based on scroll position or manual button click
+        function setActiveTheme(theme) {
+            currentTheme = theme;
+            const tabCosmic = document.getElementById('tab-cosmic');
+            const tabCyber = document.getElementById('tab-cyber');
+            const navLogoIcon = document.getElementById('nav-logo-icon');
+
+            if (theme === 'cosmic') {
+                tabCosmic.className = "px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/40";
+                tabCyber.className = "px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 text-slate-400 hover:text-white";
+                navLogoIcon.className = "w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 transition-all duration-500";
+            } else {
+                tabCyber.className = "px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 bg-pink-500 text-white shadow-md shadow-pink-500/40";
+                tabCosmic.className = "px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 flex items-center space-x-2 text-slate-400 hover:text-white";
+                navLogoIcon.className = "w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 transition-all duration-500";
+            }
+        }
+
+        // Intersection Observer to automatically sync header badge as user scrolls
+        const observerOptions = { threshold: 0.4 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'section-cosmic') {
+                        setActiveTheme('cosmic');
+                    } else if (entry.target.id === 'section-cyber') {
+                        setActiveTheme('cyber');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        observer.observe(document.getElementById('section-cosmic'));
+        observer.observe(document.getElementById('section-cyber'));
+
+        function scrollToElement(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Toast Notification System
+        let toastTimeout;
+        function triggerNotification(message) {
+            const toast = document.getElementById('toast-notification');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastBox = document.getElementById('toast-box');
+            const toastTitle = document.getElementById('toast-title');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = message;
+
+            if (currentTheme === 'cosmic') {
+                toastBox.className = "glass-panel-cosmic px-5 py-3.5 rounded-2xl flex items-center space-x-3 shadow-2xl border border-cyan-500/40";
+                toastTitle.className = "font-bold text-xs text-cyan-300 uppercase tracking-wider font-mono";
+                toastIcon.className = "fa-solid fa-circle-info text-cyan-400 text-lg";
+            } else {
+                toastBox.className = "glass-panel-cyber px-5 py-3.5 rounded-2xl flex items-center space-x-3 shadow-2xl border border-pink-500/40";
+                toastTitle.className = "font-bold text-xs text-pink-400 uppercase tracking-wider font-mono";
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-pink-500 text-lg";
+            }
+
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3500);
+        }
+
+        // Interactive widget helpers
+        let shieldPower = 98;
+        function boostShields() {
+            shieldPower = Math.min(100, shieldPower + 2);
+            document.getElementById('cosmic-shield-val').innerText = shieldPower + '%';
+            document.getElementById('cosmic-shield-bar').style.width = shieldPower + '%';
+            triggerNotification('Deflector shield harmonic frequency adjusted.');
+        }
+
+        let clockSpeed = 4.8;
+        function boostCyberClock() {
+            clockSpeed = parseFloat((clockSpeed + 0.2).toFixed(1));
+            if (clockSpeed > 5.8) clockSpeed = 3.6;
+            document.getElementById('cyber-clock-val').innerText = clockSpeed + ' GHz';
+            const percentage = Math.min(100, Math.floor((clockSpeed / 6.0) * 100));
+            document.getElementById('cyber-clock-bar').style.width = percentage + '%';
+            triggerNotification('Neural synapse clock boosted to ' + clockSpeed + ' GHz.');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURELIA | Cinematic Luxury & Object d'Art</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', "Segoe UI", 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                        serif: ['Cinzel', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        luxury: {
+                            black: '#030305',
+                            surface: '#0c0d10',
+                            card: '#14161b',
+                            border: '#262833',
+                            gold: '#c5a059',
+                            goldlight: '#e2cb92'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome and Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030305;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        .glass-panel {
+            background: rgba(14, 16, 22, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gold-glow {
+            text-shadow: 0 0 35px rgba(197, 160, 89, 0.45);
+        }
+        .box-glow {
+            box-shadow: 0 0 40px rgba(197, 160, 89, 0.12);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030305;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262833;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c5a059;
+        }
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="selection:bg-luxury-gold selection:text-black">
+
+    <nav class="fixed top-0 left-0 w-full z-50 glass-panel border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full border border-luxury-gold/50 flex items-center justify-center bg-black/60 text-luxury-gold font-cinzel font-bold text-lg group-hover:border-luxury-gold transition shadow-lg">
+                    A
+                </div>
+                <span class="font-cinzel tracking-[0.25em] text-xl font-bold bg-gradient-to-r from-white via-luxury-goldlight to-luxury-gold bg-clip-text text-transparent">AURELIA</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-10 text-xs tracking-[0.2em] uppercase text-gray-300 font-medium">
+                <a href="#hero" class="hover:text-luxury-gold transition">Exhibition</a>
+                <a href="#catalog" class="hover:text-luxury-gold transition">Collection</a>
+                <a href="#craft" class="hover:text-luxury-gold transition">Atelier</a>
+                <a href="#journal" class="hover:text-luxury-gold transition">Journal</a>
+            </div>
+
+            <div class="flex items-center gap-5">
+                <button onclick="toggleAudio()" id="sound-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:border-luxury-gold/50 text-xs tracking-wider uppercase transition">
+                    <i class="fa-solid fa-volume-xmark text-luxury-gold" id="sound-icon"></i>
+                    <span id="sound-text">Atmosphere</span>
+                </button>
+                
+                <button onclick="toggleCartDrawer()" class="relative p-3 rounded-full border border-white/10 bg-white/5 hover:border-luxury-gold/50 text-gray-200 transition">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-luxury-gold text-black rounded-full text-[10px] font-bold flex items-center justify-center hidden">0</span>
+                </button>
+
+                <button onclick="openCheckoutModal()" class="hidden sm:inline-block px-6 py-2.5 rounded-full bg-gradient-to-r from-luxury-gold to-amber-600 text-black font-semibold text-xs tracking-widest uppercase hover:brightness-110 transition shadow-lg shadow-luxury-gold/20">
+                    VIP Concierge
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header id="hero" class="relative min-h-screen flex items-center justify-center text-center px-6 pt-20 overflow-hidden">
+        <canvas id="three-canvas"></canvas>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-luxury-black/60 to-luxury-black pointer-events-none z-0"></div>
+
+        <div class="max-w-5xl mx-auto space-y-8 z-10 relative">
+            <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-luxury-gold/30 bg-black/50 backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-luxury-gold animate-ping"></span>
+                <span class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Autumn / Winter Masterworks</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tight text-white font-cinzel uppercase gold-glow">
+                Objects of Desire
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                Transcendent timepieces, bespoke leathercraft, and architectural accessories forged for the uncompromising connoisseur.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
+                <a href="#catalog" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase hover:bg-luxury-gold hover:text-black transition duration-300 shadow-2xl">
+                    Explore Collection
+                </a>
+                <button onclick="openQuickView(1)" class="w-full sm:w-auto px-8 py-4 rounded-full border border-white/20 glass-panel text-white font-semibold text-xs tracking-widest uppercase hover:border-luxury-gold hover:text-luxury-gold transition duration-300">
+                    View Featured Flagship
+                </button>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce hidden md:block z-10">
+            <a href="#catalog" class="text-luxury-gold text-xs tracking-[0.25em] uppercase flex flex-col items-center gap-2">
+                <span>Scroll to Discover</span>
+                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </a>
+        </div>
+    </header>
+
+    <section id="catalog" class="py-28 px-6 max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div class="space-y-4">
+                <span class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Curated Catalog</span>
+                <h2 class="text-3xl sm:text-5xl font-bold font-cinzel text-white">The Permanent Exhibition</h2>
+                <p class="text-gray-400">Filter through our master-crafted categories.</p>
+            </div>
+
+            <!-- Interactive Filter Buttons -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="filterProducts('all')" id="filter-all" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 bg-luxury-gold text-black shadow-lg shadow-luxury-gold/20">
+                    All Objects
+                </button>
+                <button onclick="filterProducts('timepieces')" id="filter-timepieces" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 glass-panel text-gray-300 hover:text-white border-white/10">
+                    Timepieces
+                </button>
+                <button onclick="filterProducts('leather')" id="filter-leather" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 glass-panel text-gray-300 hover:text-white border-white/10">
+                    Leathercraft
+                </button>
+                <button onclick="filterProducts('decor')" id="filter-decor" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 glass-panel text-gray-300 hover:text-white border-white/10">
+                    Objects & Decor
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Grid Container -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamically populated via JS -->
+        </div>
+    </section>
+
+    <section id="craft" class="py-28 bg-[#06070a] border-y border-white/10 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-6">
+                <span class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Uncompromising Standards</span>
+                <h2 class="text-3xl sm:text-5xl font-bold font-cinzel text-white">The Geneva & Milan Ateliers</h2>
+                <p class="text-gray-300 leading-relaxed font-light">
+                    Every piece in the Aurelia collection is brought to life by master artisans using centuries-old techniques blended with cutting-edge aerospace-grade metallurgy and sustainable luxury sourcing.
+                </p>
+                <div class="grid grid-cols-2 gap-6 pt-4 border-t border-white/10">
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-bold font-cinzel text-luxury-gold">100%</p>
+                        <p class="text-xs uppercase text-gray-400 tracking-wider mt-1">Hand-Finished in EU</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-bold font-cinzel text-luxury-gold">Lifetime</p>
+                        <p class="text-xs uppercase text-gray-400 tracking-wider mt-1">Global Concierge Warranty</p>
+                    </div>
+                </div>
+            </div>
+            <div class="relative rounded-3xl overflow-hidden border border-white/15 group">
+                <img src="https://placehold.co/800x600/14161b/c5a059?text=Aurelia+Atelier+Craftsmanship" alt="Atelier Craft" class="w-full h-[400px] object-cover group-hover:scale-105 transition duration-700" onerror="this.src='https://placehold.co/800x600/14161b/ffffff?text=Atelier'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8">
+                    <p class="text-sm font-light text-luxury-goldlight tracking-wide">Master horologist adjusting the Tourbillon escapement in Geneva.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journal" class="py-28 px-6 max-w-7xl mx-auto relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <span class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Editorial</span>
+            <h2 class="text-3xl sm:text-5xl font-bold font-cinzel text-white">The Aurelia Journal</h2>
+            <p class="text-gray-400">Reflections on design, materiality, and enduring luxury.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 group hover:border-luxury-gold/50 transition duration-300">
+                <div class="h-60 overflow-hidden">
+                    <img src="https://placehold.co/600x400/14161b/c5a059?text=Horology+Milestone" alt="Journal 1" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/600x400/14161b/ffffff?text=Journal+1'">
+                </div>
+                <div class="p-6 space-y-3">
+                    <span class="text-[10px] text-luxury-gold uppercase tracking-widest font-bold">Horology &bull; Oct 2026</span>
+                    <h4 class="text-xl font-bold font-cinzel text-white">The Anatomy of a Sapphire Tourbillon</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">Exploring the engineering triumph of transparent crystal cases and anti-gravitational escapements.</p>
+                </div>
+            </div>
+            <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 group hover:border-luxury-gold/50 transition duration-300">
+                <div class="h-60 overflow-hidden">
+                    <img src="https://placehold.co/600x400/14161b/c5a059?text=Sustainable+Leather" alt="Journal 2" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/600x400/14161b/ffffff?text=Journal+2'">
+                </div>
+                <div class="p-6 space-y-3">
+                    <span class="text-[10px] text-luxury-gold uppercase tracking-widest font-bold">Materiality &bull; Sep 2026</span>
+                    <h4 class="text-xl font-bold font-cinzel text-white">Vegetal Tanning in Tuscan Hills</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">Why true luxury relies on natural extracts and decades of tactile patina development.</p>
+                </div>
+            </div>
+            <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 group hover:border-luxury-gold/50 transition duration-300">
+                <div class="h-60 overflow-hidden">
+                    <img src="https://placehold.co/600x400/14161b/c5a059?text=Architectural+Objects" alt="Journal 3" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/600x400/14161b/ffffff?text=Journal+3'">
+                </div>
+                <div class="p-6 space-y-3">
+                    <span class="text-[10px] text-luxury-gold uppercase tracking-widest font-bold">Design &bull; Aug 2026</span>
+                    <h4 class="text-xl font-bold font-cinzel text-white">Minimalism in the Age of Excess</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">How silence, negative space, and disciplined proportion define modern prestige.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black border-t border-white/10 py-16 text-gray-400 text-sm relative z-10">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full border border-luxury-gold flex items-center justify-center text-luxury-gold font-cinzel font-bold text-sm">
+                        A
+                    </div>
+                    <span class="font-cinzel tracking-[0.25em] text-lg font-bold text-white">AURELIA</span>
+                </div>
+                <p class="text-xs text-gray-500">The premier destination for bespoke luxury objects, timepieces, and leather art.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold uppercase tracking-wider text-xs mb-4">Collection</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#catalog" class="hover:text-luxury-gold transition">Timepieces</a></li>
+                    <li><a href="#catalog" class="hover:text-luxury-gold transition">Leathercraft</a></li>
+                    <li><a href="#catalog" class="hover:text-luxury-gold transition">Objects & Decor</a></li>
+                    <li><a href="#catalog" class="hover:text-luxury-gold transition">Limited Editions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold uppercase tracking-wider text-xs mb-4">Concierge</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><button onclick="openCheckoutModal()" class="hover:text-luxury-gold transition">VIP Client Services</button></li>
+                    <li><a href="#craft" class="hover:text-luxury-gold transition">Atelier Warranty</a></li>
+                    <li><a href="#journal" class="hover:text-luxury-gold transition">Press & Media</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold uppercase tracking-wider text-xs mb-4">Newsletter</h4>
+                <p class="text-xs text-gray-500 mb-3">Receive private invitations to seasonal drops.</p>
+                <form onsubmit="handleNewsletter(event)" class="flex gap-2">
+                    <input type="email" required placeholder="Enter email..." class="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs outline-none focus:border-luxury-gold text-white w-full">
+                    <button type="submit" class="px-5 py-2 rounded-full bg-luxury-gold text-black font-bold text-xs uppercase hover:bg-luxury-goldlight transition">Join</button>
+                </form>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-white/5 text-center text-xs text-gray-600">
+            &copy; 2026 Aurelia Maison Internationale. All rights reserved. Cinematic E-Commerce Showcase.
+        </div>
+    </footer>
+
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md glass-panel border-l border-white/10 transform translate-x-full transition-transform duration-500 flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <h3 class="font-cinzel text-xl font-bold text-white tracking-wider">Your Shopping Bag</h3>
+            <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Populated via JS -->
+        </div>
+
+        <div class="p-6 border-t border-white/10 space-y-4 bg-black/40">
+            <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-400 uppercase tracking-widest text-xs">Subtotal</span>
+                <span id="cart-subtotal" class="font-cinzel font-bold text-lg text-white">$0.00</span>
+            </div>
+            <button onclick="openCheckoutModal()" class="w-full py-4 rounded-full bg-luxury-gold text-black font-bold text-xs uppercase tracking-widest hover:bg-luxury-goldlight transition shadow-lg shadow-luxury-gold/20">
+                Proceed to Secure Checkout
+            </button>
+        </div>
+    </div>
+
+    <div id="quick-view-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 sm:p-10 border border-white/10 relative shadow-2xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <button onclick="closeQuickView()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="rounded-2xl overflow-hidden border border-white/10 h-80 sm:h-96">
+                <img id="modal-img" src="" alt="Product" class="w-full h-full object-cover">
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <span id="modal-category" class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Category</span>
+                    <h3 id="modal-title" class="text-2xl sm:text-3xl font-bold font-cinzel text-white mt-1">Product Title</h3>
+                    <p id="modal-price" class="text-xl font-bold font-cinzel text-luxury-gold mt-2">$0.00</p>
+                </div>
+                <p id="modal-desc" class="text-gray-300 text-sm leading-relaxed font-light">Product description goes here.</p>
+                
+                <div class="pt-4 flex items-center gap-4">
+                    <button id="modal-add-btn" onclick="" class="flex-1 py-4 rounded-full bg-luxury-gold text-black font-bold text-xs uppercase tracking-widest hover:bg-luxury-goldlight transition shadow-lg shadow-luxury-gold/20">
+                        Add to Shopping Bag
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-8 border border-white/10 relative shadow-2xl">
+            <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="text-center mb-8">
+                <span class="text-xs uppercase tracking-[0.25em] text-luxury-gold font-semibold">Secure Payment Gateway</span>
+                <h3 class="text-2xl font-bold font-cinzel mt-1 text-white">VIP Concierge Checkout</h3>
+                <p class="text-xs text-gray-400 mt-1">Encrypted 256-bit secure transaction.</p>
+            </div>
+
+            <form onsubmit="handleCheckout(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-gray-300 mb-2">Full Legal Name</label>
+                    <input type="text" required placeholder="Lord / Lady Aurelius" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-luxury-gold text-white">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-gray-300 mb-2">Concierge Email</label>
+                    <input type="email" required placeholder="aurelius@luxury-maison.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-luxury-gold text-white">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-gray-300 mb-2">Global Shipping Address</label>
+                    <input type="text" required placeholder="Via Monte Napoleone 8, Milan" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-luxury-gold text-white">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-gray-300 mb-2">Black Card / Visa Number</label>
+                    <input type="text" required placeholder="•••• •••• •••• 8888" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-luxury-gold text-white">
+                </div>
+                <button type="submit" class="w-full py-4 rounded-full bg-luxury-gold text-black font-bold text-xs uppercase tracking-widest hover:bg-luxury-goldlight transition shadow-lg shadow-luxury-gold/20 mt-4">
+                    Authorize Payment & Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-8 right-8 z-50 glass-panel border border-luxury-gold/30 text-white font-medium px-6 py-4 rounded-2xl shadow-2xl transform translate-y-32 opacity-0 transition-all duration-300 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-luxury-gold text-xl"></i>
+        <span id="toast-msg">Action completed successfully!</span>
+    </div>
+
+    <script>
+        // Product Database
+        const products = [
+            {
+                id: 1,
+                name: "Aurelia Chronograph Tourbillon",
+                category: "timepieces",
+                price: 48500,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Tourbillon+Watch",
+                desc: "Forged in Geneva with a fully transparent sapphire crystal case, 72-hour power reserve, and hand-polished platinum gears."
+            },
+            {
+                id: 2,
+                name: "The Milano Executive Briefcase",
+                category: "leather",
+                price: 3200,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Milano+Briefcase",
+                desc: "Crafted from full-grain Tuscan calfskin with solid brass hardware forged in Florence and custom silk interior lining."
+            },
+            {
+                id: 3,
+                name: "Obsidian Kinetic Sculpture",
+                category: "decor",
+                price: 12500,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Obsidian+Sculpture",
+                desc: "A mesmerizing architectural center piece featuring balanced obsidian spheres orbiting on polished titanium rings."
+            },
+            {
+                id: 4,
+                name: "Royal Obsidian Automatic",
+                category: "timepieces",
+                price: 24000,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Obsidian+Automatic",
+                desc: "Matte ceramic DLC coating with 18k rose gold indices and an exhibition caseback displaying the oscillating rotor."
+            },
+            {
+                id: 5,
+                name: "Firenze Weekender Duffle",
+                category: "leather",
+                price: 4100,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Firenze+Weekender",
+                desc: "The ultimate travel companion. Vegetable-tanned leather that develops an extraordinary rich patina over decades."
+            },
+            {
+                id: 6,
+                name: "Brutalist Bronze Decanter",
+                category: "decor",
+                price: 2800,
+                image: "https://placehold.co/600x600/14161b/c5a059?text=Bronze+Decanter",
+                desc: "Hand-cast architectural bronze paired with mouth-blown Bohemian crystal for elite tasting experiences."
+            }
+        ];
+
+        // Shopping Cart State
+        let cart = [];
+
+        // Render Product Catalog
+        function renderProducts(filter = 'all') {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-2xl overflow-hidden border border-white/10 group hover:border-luxury-gold/50 transition duration-300 flex flex-col justify-between";
+                card.innerHTML = `
+                    <div class="relative h-72 overflow-hidden bg-black/40 cursor-pointer" onclick="openQuickView(${p.id})">
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" onerror="this.src='https://placehold.co/600x600/14161b/ffffff?text=Product'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                            <span class="text-xs uppercase tracking-widest text-luxury-gold font-bold">Quick View</span>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-[0.25em] text-luxury-gold font-bold">${p.category}</span>
+                            <h4 class="text-xl font-bold font-cinzel text-white mt-1">${p.name}</h4>
+                            <p class="text-luxury-gold font-cinzel font-bold text-lg mt-1">$${p.price.toLocaleString()}</p>
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="openQuickView(${p.id})" class="flex-1 py-3 rounded-full border border-white/20 text-white font-semibold text-xs uppercase tracking-wider hover:border-luxury-gold hover:text-luxury-gold transition">
+                                Details
+                            </button>
+                            <button onclick="addToCart(${p.id})" class="px-5 py-3 rounded-full bg-luxury-gold text-black font-semibold text-xs uppercase tracking-wider hover:bg-luxury-goldlight transition shadow-lg shadow-luxury-gold/20">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter Switcher Logic
+        function filterProducts(category) {
+            ['all', 'timepieces', 'leather', 'decor'].forEach(cat => {
+                const btn = document.getElementById(`filter-${cat}`);
+                if (cat === category) {
+                    btn.className = "px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 bg-luxury-gold text-black shadow-lg shadow-luxury-gold/20";
+                } else {
+                    btn.className = "px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition duration-300 glass-panel text-gray-300 hover:text-white border-white/10";
+                }
+            });
+            renderProducts(category);
+        }
+
+        // Cart Drawer Operations
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.toggle('translate-x-full');
+            renderCartItems();
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartBadge();
+            showToast(`Added ${product.name} to shopping bag.`);
+            renderCartItems();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalQty > 0) {
+                badge.innerText = totalQty;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-center py-12 text-xs uppercase tracking-widest">Your shopping bag is empty.</p>`;
+                subtotalEl.innerText = "$0.00";
+                return;
+            }
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10";
+                div.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-xl border border-white/10">
+                    <div class="flex-1">
+                        <h5 class="text-sm font-bold font-cinzel text-white">${item.name}</h5>
+                        <p class="text-xs text-luxury-gold font-cinzel mt-1">$${item.price.toLocaleString()} × ${item.qty}</p>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="text-gray-400 hover:text-red-400 p-2"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            subtotalEl.innerText = `$${subtotal.toLocaleString()}`;
+        }
+
+        // Quick View Modal
+        function openQuickView(productId) {
+            const p = products.find(item => item.id === productId);
+            document.getElementById('modal-img').src = p.image;
+            document.getElementById('modal-category').innerText = p.category;
+            document.getElementById('modal-title').innerText = p.name;
+            document.getElementById('modal-price').innerText = `$${p.price.toLocaleString()}`;
+            document.getElementById('modal-desc').innerText = p.desc;
+            document.getElementById('modal-add-btn').setAttribute('onclick', `addToCart(${p.id}); closeQuickView();`);
+            document.getElementById('quick-view-modal').classList.remove('hidden');
+        }
+
+        function closeQuickView() {
+            document.getElementById('quick-view-modal').classList.add('hidden');
+        }
+
+        // Checkout Modal
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast("Please add at least one item to your bag before checkout.");
+                return;
+            }
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function handleCheckout(event) {
+            event.preventDefault();
+            closeCheckoutModal();
+            cart = [];
+            updateCartBadge();
+            toggleCartDrawer();
+            showToast("Payment authorized successfully! Your concierge order is confirmed.");
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3500);
+        }
+
+        function handleNewsletter(event) {
+            event.preventDefault();
+            showToast("Thank you for subscribing to Aurelia Private Editions.");
+            event.target.reset();
+        }
+
+        // Three.js Interactive Particle & Geometric Canvas Background
+        window.onload = function() {
+            renderProducts('all');
+
+            const canvas = document.getElementById('three-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Create floating golden geometric objects / particles
+            const geometry = new THREE.IcosahedronGeometry(2, 0);
+            const material = new THREE.MeshBasicMaterial({ color: 0xc5a059, wireframe: true, transparent: true, opacity: 0.25 });
+            const icosahedron = new THREE.Mesh(geometry, material);
+            scene.add(icosahedron);
+
+            // Particles
+            const particlesCount = 400;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 20;
+            }
+            const particlesGeometry = new THREE.BufferGeometry();
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.04,
+                color: 0xe2cb92,
+                transparent: true,
+                opacity: 0.6
+            });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 5;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            window.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) - 0.5;
+                mouseY = (event.clientY / window.innerHeight) - 0.5;
+            });
+
+            // Animation Loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                icosahedron.rotation.x += 0.002;
+                icosahedron.rotation.y += 0.003;
+
+                particlesMesh.rotation.y -= 0.001;
+
+                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // Simulated Ambient Sound Toggle using Web Audio API
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isAudioPlaying = false;
+
+        function toggleAudio() {
+            const btn = document.getElementById('sound-btn');
+            const icon = document.getElementById('sound-icon');
+            const text = document.getElementById('sound-text');
+
+            if (!isAudioPlaying) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    oscillator = audioCtx.createOscillator();
+                    gainNode = audioCtx.createGain();
+
+                    // Low ambient luxury chord tone (110Hz - A2)
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(110, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.start();
+
+                    isAudioPlaying = true;
+                    icon.className = "fa-solid fa-volume-high text-luxury-gold";
+                    text.innerText = "Atmosphere Active";
+                    btn.classList.add('border-luxury-gold');
+                    showToast("Simulated ambient luxury atmosphere activated.");
+                } catch (e) {
+                    console.error(e);
+                }
+            } else {
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator.disconnect();
+                }
+                if (audioCtx) {
+                    audioCtx.close();
+                }
+                isAudioPlaying = false;
+                icon.className = "fa-solid fa-volume-xmark text-luxury-gold";
+                text.innerText = "Atmosphere";
+                btn.classList.remove('border-luxury-gold');
+                showToast("Atmosphere deactivated.");
+            }
+        }
+    </script>
+</body>
+</html>
